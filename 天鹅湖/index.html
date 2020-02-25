@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+		<meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+		<title>天鹅湖</title>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
+		<style>
+			*{
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
+			}
+			body{
+				margin: 0;
+				padding: 0;
+			}
+			#app{
+				position: relative;
+				width: 100vw;
+				height: 100vh;
+				overflow: hidden;
+			}
+			img{
+				width: 100%;
+				height: 100%;
+				vertical-align: middle;
+			}
+.page{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+#page1{
+	/* background-color: #00B7FF; */
+}
+#page2{
+	/* background-color: rosybrown; */
+}
+#page3{
+	/* background-color: yellowgreen; */
+}
+.eventNode{
+	pointer-events:none;
+}
+#page1_title{
+	position: absolute;
+	top: 20vw;
+	width:80vw;
+	height: auto;
+	left: 10vw;
+}
+#page2_title,#page3_title,#page4_title,#page5_title{
+	position: absolute;
+	top: 18vw;
+	width:70vw;
+	height: auto;
+	left: 15vw;
+}
+#page1_Lead{
+	position: absolute;
+	top: 50vw;
+	width:80vw;
+	height: auto;
+	left: 10vw;
+}
+#page1_wenZi{
+	position: absolute;
+	top: 130vw;
+	width:60vw;
+	height: auto;
+	left: 5vw;
+}
+#page2_wenZi,#page3_wenZi,#page4_wenZi{
+	position: absolute;
+	top: 55vw;
+	width:70vw;
+	height: auto;
+	left: 15vw;
+}
+#page5_wenZi{
+	position: absolute;
+	top: 60vw;
+	width:80vw;
+	height: auto;
+	left: 10vw;
+}
+#nextBtn{
+	position: fixed;
+	width: 15vw;
+	height: 15vw;
+	bottom: 5vw;
+	opacity: 0.5;
+	left: 47vw;
+	z-index: 1000;
+}
+#nextBtn>img{
+	width: 6vw;
+	height: auto;
+}
+#page1_kaiShi{
+	position: absolute;
+	top: 138vw;
+	width: 70vw;
+	height: auto;
+	right: 15vw;
+}
+#page5_kaiShi{
+	position: absolute;
+	top: 105vw;
+	width: 70vw;
+	height: auto;
+	right: 15vw;
+}
+/* #page2_kaiShi,#page3_kaiShi,#page4_kaiShi{
+	position: absolute;
+    top: 125vw;
+    width: 70vw;
+    height: auto;
+    right: 15vw;
+} */
+#music{
+	position: fixed;
+	width: 8vw;
+	height: 8vw;
+	top: 4vw;
+	right: 4vw;
+	z-index: 1000;
+	/* animation: rotating 3s linear infinite; */
+}
+#myAudio{
+	/* display: none; */
+}
+@-webkit-keyframes rotating {
+    from { -webkit-transform: rotate(0) }
+    to { -webkit-transform: rotate(360deg) }
+}
+#gif{
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+}
+#bg,#gif{
+	position: absolute;
+	width:100%;
+	height: 100%;
+}
+		</style>
+	</head>
+	<body>
+
+		<div id="app">
+			<div id="page1" class="page">
+                  <img src="img/indexBg.png" />
+				  <img src="img/aa.gif" id="gif" class="gif">
+				  <img src="img/biaoTi@2x.png" id="page1_title" class="hide">
+				  <img src="img/Lead@2x.png" id="page1_Lead" class="hide">
+                  <!-- <img src="img/kaiShi.png" id="page1_kaiShi" class="hide"> -->
+			</div>
+			<div id="page2" class="page" style="display: none;" >
+				<img src="img/tongYongBg.png" />
+				<img src="img/aa.gif" class="gif">
+				<img src="img/biaoTi2@2x.png" id="page2_title" class="hide">
+				<img src="img/1@2x.png" id="page2_wenZi" class="hide">
+				
+			</div>
+			<div id="page3" class="page" style="display: none;">
+				<img src="img/tongYongBg.png" />
+				<img src="img/aa.gif" class="gif">
+				<img src="img/biaoTi2@2x.png" id="page3_title" class="hide">
+				<img src="img/2@2x.png" id="page3_wenZi" class="hide">
+			</div>
+			<div id="page4" class="page" style="display: none;">
+				<img src="img/tongYongBg.png" />
+				<img src="img/aa.gif" class="gif">
+				<img src="img/biaoTi2@2x.png" id="page4_title" class="hide">
+				<img src="img/3@2x.png" id="page4_wenZi" class="hide">
+			</div>
+			<div id="page5" class="page" style="display: none;">
+				<img src="img/tongYongBg.png" />
+				<img src="img/aa.gif" class="gif">
+				<img src="img/biaoTi2@2x.png" id="page5_title" class="hide">
+				<img src="img/4.png" id="page5_wenZi" class="hide">
+				<img src="img/kaiShi.png" id="page5_kaiShi" class="hide">
+			</div>
+		</div>
+		<div>
+            <div id="nextBtn" style="display: none;" onclick="touchUp()">
+				<img src="img/next.png"  class="animated bounce infinite">
+			</div>
+			
+			 <img src="img/MusicOff@2x.png" id="music" onclick="changePlay()">
+			 <audio id="myAudio" loop="loop"  src="music.mp3" data-isPlay="0"></audio>
+		</div>
+		<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+		<script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+	</body>
+</html>

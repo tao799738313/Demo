@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<link rel="stylesheet" href="css/index.css">
+		<style>
+			*{
+				box-sizing: border-box;
+			}
+			#app{
+				white-space: nowrap;
+				    overflow-x: auto;
+				    display: flex;
+			}
+			.mgL{
+				margin-left: 20px;
+				padding-left: 10px;
+				border-left: 2px solid #d5d5d5;
+			}
+			.mgLB{
+				margin-left: 20px;
+				padding-left: 10px;
+				/* border-left: 2px solid #d5d5d5; */
+			}
+			.noArr{
+				display: inline-block;
+				padding: 3px 5px;
+				margin: 5px 0;
+				background-color: #949494;
+				cursor: no-drop;
+				color: white;
+				border-radius: 3px;
+				font-size: 14px;
+			}
+			.ggList,.dwtzList,.fzjgList,.gdList{
+				display: inline-block;
+				padding: 3px 5px;
+				margin: 5px 0;
+				color: white;
+				border-radius: 3px;
+				cursor: pointer;
+				font-size: 14px;
+			}
+			.ggList{
+				background-color: coral;
+			}
+			.dwtzList{
+				background-color: #ec567b;
+			}
+			.fzjgList{
+				background-color: #ca50ff;
+			}
+			.gdList{
+				background-color: #53b528;
+			}
+			.gs-ggList,.gs-dwtzList,.gs-fzjgList,.gs-gdList,.gs-dwtzList-has{
+				    font-weight: 600;
+				    margin: 5px 0;
+				    display: inline-block;
+					font-size: 14px;
+			}
+			.gs-ggList{
+				color: coral;
+				cursor: no-drop;
+			}
+			.gs-dwtzList{
+				display: inline-block;
+				padding: 0 5px;
+				margin: 5px 0;
+				font-weight: 500;
+				background-color: black;
+				color: white;
+				border-radius: 3px;
+				cursor: help;
+				font-size: 14px;
+				line-height: 28px;
+				/*color: #ec567b;*/
+				/*cursor: help;*/
+			}
+			.gs-fzjgList{
+				display: inline-block;
+				padding: 0 5px;
+				margin: 5px 0;
+				font-weight: 500;
+				background-color: black;
+				color: white;
+				border-radius: 3px;
+				cursor: help;
+				font-size: 14px;
+				line-height: 28px;
+				/*color: #ca50ff;*/
+				/*cursor: help;*/
+			}
+			.gs-fzjgList-no{
+				display: inline-block;
+				padding: 0 5px;
+				margin: 5px 0;
+				font-weight: 500;
+				background-color: #a2a2a2;
+				color: white;
+				border-radius: 3px;
+				cursor: no-drop;
+				font-size: 14px;
+				line-height: 28px;
+			}
+			.gs-gdList{
+				color: #53b528;
+				cursor: no-drop;
+			}
+			.gs-dwtzList-has{
+				color: #949494;
+				cursor: no-drop;
+				
+			}
+			.gs{
+				display: inline-block;
+				padding: 0 5px;
+				margin: 5px 0;
+				font-weight: 600;
+				background-color: black;
+				color: white;
+				border-radius: 3px;
+				/*cursor: pointer;*/
+				font-size: 14px;
+				line-height: 28px;
+			}
+			.gsOpen{
+				vertical-align: middle;
+				width:14px;
+				margin-left:5px;
+				cursor: pointer;
+			}
+			.arrOpen{
+				vertical-align: middle;
+				width:12px;
+			}
+			.gsName{
+				cursor: pointer;
+			}
+			.gsName:hover{
+				color: #1fffc3;
+			}
+			#mask{
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background-color: rgba(0,0,0,0.5);
+			}
+			#loadMask{
+				 position: fixed;
+				 top: 0;
+				 left: 0;
+				 width: 100%;
+				 height: 100%;
+				 background-color: rgba(0,0,0,0.2);
+			 }
+			#maskBox{
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%,-50%);
+				min-width: 40%;
+				max-width: 60%;
+				max-height: 60%;
+				overflow: auto;
+				background-color: white;
+				padding: 15px;
+				border-radius: 5px;
+			}
+			#maskBox>div{
+				margin-bottom: 5px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id='app' class="">
+			
+		</div>
+		<!--详情蒙版-->
+		<div id="mask" onclick="$('#mask').hide()" style="display: none;">
+			<div id="maskBox" onclick="event.stopPropagation()">
+				
+			</div>
+		</div>
+		<!--加载中蒙版-->
+		<div id="loadMask" style="display: none;">
+			<ul id="spinners">
+				<li class="active" data-id="1">
+					<div id="preloader_1">
+						<span></span>
+						<span></span>
+						<span></span>
+						<span></span>
+						<span></span>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+		<script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+	</body>
+</html>

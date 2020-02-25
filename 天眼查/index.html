@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>企业信息</title>
+  <meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" charset=UTF-8>
+  <meta name="description" content="">
+  <link rel="stylesheet" href="css/tpp-d6696e4aaa.css">
+  <style>
+    .pointer {
+      cursor: pointer;
+    }
+	.mask-circle {
+	      fill: rgb(39, 249, 255);
+	}
+	#mask{
+		position: fixed;
+		width: 100%;
+		height: 100%;
+		background-color:rgba(0,0,0,0.5) ;
+		top: 0;
+		left: 0;
+	}
+	#maskBox{
+		position: absolute;
+		padding: 10px 10px 15px 10px;
+		background-color:rgb(255,255,255);
+		top: 50%;
+		left: 50%;
+		min-width: 300px;
+		max-width: 400px;
+		border-radius: 6px;
+		transform: translate(-50%,-50%);
+		overflow-wrap:break-word;
+	}
+  </style>
+</head>
+
+<body>
+
+<div id="enterprise_ws">
+	<!-- 绘制svg -->
+</div>
+
+<div id="mask" style="display: none;">
+	<div id="maskBox">
+		<div style="text-align: right;">
+			<span style="display:inline-block;padding:5px 10px;cursor: pointer;" onclick="document.querySelector('#mask').style.display='none'">X</span>
+		</div>
+		<div id="maskText">
+			<!-- 显示详情 -->
+		</div>
+	</div>
+</div>
+<!-- <script src="https://cdn.tianyancha.com/graph/lzma/lzma-min.js"></script> -->
+<script src="js/lzma-min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- <script src="https://cdn.tianyancha.com/graph/lzma/lzma_worker-min.js"></script> -->
+<script src="js/lzma_worker-min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- 这个可以不要，但是是promise兼容包 -->
+<!-- <script src="https://cdn.tianyancha.com/graph/resources/scripts/tyc-polyfill-e005425174.js"></script> -->
+<script src="js/tyc-polyfill-e005425174.js" type="text/javascript" charset="utf-8"></script>   
+
+<!-- <script src="https://cdn.tianyancha.com/js-cdn/react/16.4.1/react.production.min.js"></script> -->
+<script src="js/react.production.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- <script src="https://cdn.tianyancha.com/js-cdn/react/16.4.1/react-dom.production.min.js"></script> -->
+<script src="js/react-dom.production.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- <script src="https://cdn.tianyancha.com/js-cdn/axios/0.16.2/axios.min.js"></script> -->
+<script src="js/axios.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- <script src="https://cdn.tianyancha.com/js-cdn/d3/4.13.0/d3.min.js"></script> -->
+<script src="js/d3.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- <script src="https://cdn.tianyancha.com/graph/resources/scripts/tyc-dr-3ba30f7aac.js"></script> -->
+<script src="js/tyc-dr-3ba30f7aac.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- <script src="https://cdn.tianyancha.com/graph/resources/scripts/tyc-ec-0ab07415a5.js"></script> -->
+<script src="js/aa.3.js" type="text/javascript" charset="utf-8"></script>
+
+</body>
+</html>
