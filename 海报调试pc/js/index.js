@@ -41,6 +41,7 @@ function fileUpload(file){
 		
 		// 还原页面
 		doArr = []
+		$('#dituImg').remove()
 		doArrDraw()
 		blockDraw()
 		
