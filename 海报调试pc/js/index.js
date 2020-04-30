@@ -256,15 +256,16 @@ function canvasMD(){
 	})
 }
 
-function canvasMV(e){
+function canvasMV(){
 	if(selectArea==0){ return; }
-	if(mouseStart){
-		var index = doArr.length-1
-		doArr[index].e_x = event.layerX
-		doArr[index].e_y = event.layerY
-		doArrDraw()
-		tishi(doArr[index])
-	}
+	if(!mouseStart){ return; }
+
+	var index = doArr.length-1
+	doArr[index].e_x = event.layerX
+	doArr[index].e_y = event.layerY
+	doArrDraw()
+	tishi(doArr[index])
+
 }
 
 function tishi(obj){
@@ -276,6 +277,10 @@ function tishi(obj){
 
 function count(obj){
 	var x,y,x2,y2;
+	obj.s_x = Math.abs( obj.s_x )
+	obj.s_y = Math.abs( obj.s_y )
+	obj.e_x = Math.abs( obj.e_x )
+	obj.e_y = Math.abs( obj.e_y )
 	if(obj.s_x > obj.e_x){
 		x = obj.e_x
 		x2 = obj.s_x
@@ -305,8 +310,9 @@ function count(obj){
             return(S4() + S4() + S4() + S4() + S4() + S4() + S4() + S4());
         }
 
-function canvasMU(e){
+function canvasMU(){
 	if(selectArea==0){ return; }
+	if(!mouseStart){ return; }
 	var index = doArr.length-1
 	doArr[index].e_x = event.layerX
 	doArr[index].e_y = event.layerY
