@@ -2,13 +2,14 @@
  * Created by taotao on 2018-12-05.
  */
 
+
 var accountId = methods.getQueryString("accountId"),
     agentId = methods.getQueryString("agentId"),
     gui = methods.getQueryString("id"),
     userCode = methods.getQueryString("userCode"),
-    cookieObj = JSON.parse(decodeURIComponent(methods.getCookie("yq_hz_user_" + agentId).replace(/(^\"*)|(\"*$)/g, ""))),
+    cookieObj = JSON.parse(decodeURIComponent(methods.getCookie("yq_hz_user_" + accountId).replace(/(^\"*)|(\"*$)/g, ""))),
     userId = methods.getCookie("yq_qy_userid_" + agentId);
-
+    openId = cookieObj.openId;
 
 var basePath = methods.basePath;
 //appSrc是线上图片前缀
@@ -21,12 +22,14 @@ var timeMask = methods.timeMask;
 var qrcode;
 var canvasObj = {};
 var coding = "";
-var isTS = 0;  // 启动调试
+var isTS = 1;  // 启动调试
 var appImgBasePath = isTS ? '' : "http://work.hztel10000.com/" // "http://47.110.60.215:9901/"
 //var appImgBasePath =  "http://47.110.60.215:9901/"
 var canvas = $('#canvas')[0]
 var ctx  = canvas.getContext("2d");
 
+var userInfo = {}
+var coding = ""
 var canClick = false
 var touchX = 0
 
@@ -34,12 +37,12 @@ var touchX = 0
 function init() {
     qrcode = new QRCode("qrcode");
 
-    var img = new Image();
-    img.crossOrigin = ""
-    img.id = 'qrCode';
-    img.style.cssText = 'position: fixed;top: 9999px;';
-    img.onload = function(){
-        $('#yuantuBox').append(img)
+    // var img = new Image();
+    // img.crossOrigin = ""
+    // img.id = 'qrCode';
+    // img.style.cssText = 'position: fixed;top: 9999px;';
+    // img.onload = function(){
+    //     $('#yuantuBox').append(img)
 
         var userIcon = new Image();
         userIcon.crossOrigin = ""
@@ -51,41 +54,75 @@ function init() {
         userIcon.onerror = function (event) {
             timeMask("头像获取失败")
         }
-        // img.src = './img/qrCodeCanvas.jpg'  //测试，这个大小废弃了
-        userIcon.src = basePath + "app/market/activity/downloadImgByUrl?url=" + encodeURIComponent(cookieObj.userIcon);
+        userIcon.src = cookieObj.userIcon
 
-    }
-    img.onerror = function (event) {
-        timeMask("个人二维码获取失败,请先上传头像以及生成个人二维码")
-    }
+    // }
+    // img.onerror = function (event) {
+    //     timeMask("个人二维码获取失败,请先上传头像以及生成个人二维码")
+    // }
     // img.src = './img/qrCodeCanvas.jpg'  //测试，这个大小废弃了
     //  img.src = './img/code.jpg'
 
-    img.src = basePath + "app/market/activity/downloadImg?loginName="+ cookieObj.userName;
-    getDetail(gui)
+    // img.src = basePath + "app/market/activity/downloadImg?loginName="+ cookieObj.userName;
+    isLogin()
+
 }
 init()
 
-function urlAddParams(url) {
-    var targetUrl="";
+function isLogin() {
+    $(loadMask).show()
     $.ajax({
         type:'post',
-        url:basePath+'app/market/activity/urlJointParame',
+        url:basePath+'app/market/sale/init',
         dataType:"json",
-        async:false,	//同步返回
         data:{
-            agentId: agentId,
-            url: url
+            openId:openId
         },
         success:function(res){
-            targetUrl = res.url;
+            $(loadMask).hide()
+            if(res.success){
+                userInfo = res.data;
+                coding = res.data.coding
+                console.log("----------"+coding)
+                getDetail(gui)
+            }else{
+                methods.alert(res.msg,function () {
+                    location.href = "./registered.jsp?accountId=" + accountId
+                });
+            }
         },
         error:function () {
-            methods.alert("参数转换失败");
+            methods.alert("请查看当前网络状况");
         }
     })
+}
 
-    return targetUrl;
+
+function urlAddParams(url,activity) {
+	
+	url = basePath + 'doc/app/poster/center.jsp?accountId=' + accountId + '&coding='+ coding + '&id=' + activity;
+	
+    return url;
+    // var targetUrl="";
+    // $.ajax({
+    //     type:'post',
+    //     url:basePath+'app/market/activity/urlJointParame',
+    //     dataType:"json",
+    //     async:false,	//同步返回
+    //     data:{
+    //         agentId: agentId,
+    //         url: url,
+    //         couserId:couserId
+    //     },
+    //     success:function(res){
+    //         targetUrl = res.url;
+    //     },
+    //     error:function () {
+    //         methods.alert("参数转换失败");
+    //     }
+    // })
+    //
+    // return targetUrl;
 }
 
 // 获取详情
@@ -110,10 +147,13 @@ function getDetail(gui) {
                     }
                     $('#title').html(res.activity.title)
                     $('#time').html(methods.time2date(res.activity.createTime))
-                    res.activity.shareWord = res.activity.shareWord
                     if(res.activity.shareWord){
                         $('#copyVal').html(res.activity.shareWord)
                         $('#copyValDiv').show()
+                    }
+                    if(res.activity.remark){
+                        $('#remark').html(res.activity.remark)
+                        $('#remarkDiv').show()
                     }
                     getCanvasObjArr(gui)
                 }
@@ -212,42 +252,44 @@ function touchE() {
 }
 
 function changeUrl(gui,sourceUrl){
-    var targetUrl = "";
-    $.ajax({
-        type:'POST',
-        url:basePath+'app/shorturlapi/long2short',
-        dataType:"text",
-        async:false,	//同步返回
-        data:{
-            url: sourceUrl,
-            activityId_:gui,
-            coUserId_:userCode,
-            loginName_:cookieObj.userName,
-            xsyCode_:cookieObj.xsyCode,
-        },
-        success:function(res){
-            targetUrl = res;
-        },
-        error:function(XMLHttpRequest, textStatus, errorThrown){
-            methods.alert("地址转换出错!");
-        }
-    });
-    return targetUrl;
+	console.log(sourceUrl);
+
+     var targetUrl = "";
+     $.ajax({
+         type:'POST',
+         url:basePath+'app/oauth2/long2short',
+         dataType:"text",
+         async:false,	//同步返回
+         data:{
+        	 long_url: sourceUrl,
+        	 accountId:accountId
+         },
+         success:function(res){
+        	 console.log(res);
+             targetUrl = res;
+             console.log(res.shortUrl)
+         },
+         error:function(XMLHttpRequest, textStatus, errorThrown){
+             methods.alert("地址转换出错!");
+         }
+     });
+ 	console.log(targetUrl);
+     return targetUrl;
 }
 
 // 计算比例
 function count(obj,bili){
     var bili = bili || 1
-    var touchX,y,x2,y2;
+    var x,y,x2,y2;
     obj.s_x = Math.abs( obj.s_x )
     obj.s_y = Math.abs( obj.s_y )
     obj.e_x = Math.abs( obj.e_x )
     obj.e_y = Math.abs( obj.e_y )
     if(obj.s_x > obj.e_x){
-        touchX = obj.e_x
+        x = obj.e_x
         x2 = obj.s_x
     }else{
-        touchX = obj.s_x
+        x = obj.s_x
         x2 = obj.e_x
     }
     if(obj.s_y > obj.e_y){
@@ -258,9 +300,9 @@ function count(obj,bili){
         y2 = obj.e_y
     }
     return {
-        touchX: touchX * bili,
+        x: x * bili,
         y: y * bili,
-        w: (x2-touchX) * bili,
+        w: (x2-x) * bili,
         h: (y2-y) * bili
     }
 }
@@ -338,8 +380,17 @@ function openCanvas(gui,index) {
     }
 }
 
+function isDrawPhoneChange(dom) {
+    if(dom.checked){
+        $('#isDrawPhoneTishi').html("当前海报显示手机号码")
+    }else{
+        $('#isDrawPhoneTishi').html("当前海报隐藏手机号码")
+    }
+}
+
 // 最终绘制
 function drawElse(gui,index) {
+	
     var area = canvasObj[gui].arr[index].area
     if(area==0){
         return
@@ -355,11 +406,13 @@ function drawElse(gui,index) {
                 if(obj.select=="1"){
                     // 活动链接就行用url参数
                     var url = canvasObj[gui].url
-                    url = changeUrl(gui,url)
+                    var activityId =  canvasObj[gui].activity.id;
+                    url = changeUrl(gui,urlAddParams(url,activityId))
+                    //url = changeUrl(gui,url)
                     qrcode.makeCode(url);
                     var qrImg = $('#qrcode').find('canvas')[0]
                     if(qrImg){
-                        ctx.drawImage(qrImg,xywh.touchX,xywh.y,xywh.w,xywh.h)
+                        ctx.drawImage(qrImg,xywh.x,xywh.y,xywh.w,xywh.h)
                     }
                 }else if(obj.select=="2"){
                     // 个人名片
@@ -367,67 +420,80 @@ function drawElse(gui,index) {
                     if(qrCode){
                         var w = $('#qrCode').width()
                         var h = $('#qrCode').height()
-                        ctx.drawImage(qrCode,w*0.08,h*0.08,w*0.84,h*0.84,xywh.touchX,xywh.y,xywh.w,xywh.h)
-
+                        // ctx.drawImage(qrCode,w*0.08,h*0.08,w*0.84,h*0.84,xywh.x,xywh.y,xywh.w,xywh.h)
+                        ctx.drawImage(qrCode,xywh.x,xywh.y,xywh.w,xywh.h)
                         // 自带头像
                         var userIcon = $('#userIcon')[0];
                         if(userIcon){
+                            console.log(xywh)
                             // 二维码中间加logo或者头像
-                            var r = 6,touchX = xywh.touchX + xywh.w * 0.4, y= xywh.y + xywh.h * 0.4, w=xywh.w * 0.2,h=xywh.h *0.2;
+                            var r = 6,x = xywh.x + xywh.w * 0.4, y= xywh.y + xywh.h * 0.4, w=xywh.w * 0.2,h=xywh.h *0.2;
                             // 圆角的矩形
                             ctx.beginPath();
-                            ctx.moveTo(touchX+r, y);
-                            ctx.arcTo(touchX+w, y, touchX+w, y+h, r);
-                            ctx.arcTo(touchX+w, y+h, touchX, y+h, r);
-                            ctx.arcTo(touchX, y+h, touchX, y, r);
-                            ctx.arcTo(touchX, y, touchX+w, y, r);
+                            ctx.moveTo(x, y);
+                            ctx.arcTo(x+w, y, x+w, y+h, r);
+                            ctx.arcTo(x+w, y+h, x, y+h, r);
+                            ctx.arcTo(x, y+h, x, y, r);
+                            ctx.arcTo(x, y, x+w, y, r);
                             ctx.closePath();
                             ctx.save();
                             ctx.clip();
-                            ctx.drawImage(userIcon,xywh.touchX,xywh.y,xywh.w,xywh.h);
+                            ctx.drawImage(userIcon,x,y,w,h);
                             ctx.restore();
                         }
 
                     }
                 }else if(obj.select=="3"){
                     // 活动链接就行用url参数
-                    var url = changeUrl(gui,urlAddParams(obj.inp))
+                	var activityId =  canvasObj[gui].activity.id;
+                    var url = changeUrl(gui,urlAddParams(obj.inp,activityId))
                     qrcode.makeCode(url);
                     var qrImg = $('#qrcode').find('canvas')[0]
                     if(qrImg){
-                        ctx.drawImage(qrImg,xywh.touchX,xywh.y,xywh.w,xywh.h)
+                        ctx.drawImage(qrImg,xywh.x,xywh.y,xywh.w,xywh.h)
                     }
                 }else if(obj.select=="4"){
                     if(document.querySelector("#code_"+gui+"_"+index+"_"+(i+1))){
-                        ctx.drawImage($("#code_"+gui+"_"+index+"_"+(i+1))[0],xywh.touchX,xywh.y,xywh.w,xywh.h)
+                        ctx.drawImage($("#code_"+gui+"_"+index+"_"+(i+1))[0],xywh.x,xywh.y,xywh.w,xywh.h)
                     }
                 }
-
             }
             if(obj.selectAreaType == "Head"){
                 var userIcon = $('#userIcon')[0];
                 if(userIcon){
                     // 二维码中间加logo或者头像
-                    var r = 6,touchX = xywh.touchX,y= xywh.y,w=xywh.w,h=xywh.h;
+                    var r = 6,x = xywh.x,y= xywh.y,w=xywh.w,h=xywh.h;
                     // 圆角的矩形
                     ctx.beginPath();
-                    ctx.moveTo(touchX+r, y);
-                    ctx.arcTo(touchX+w, y, touchX+w, y+h, r);
-                    ctx.arcTo(touchX+w, y+h, touchX, y+h, r);
-                    ctx.arcTo(touchX, y+h, touchX, y, r);
-                    ctx.arcTo(touchX, y, touchX+w, y, r);
+                    ctx.moveTo(x, y);
+                    ctx.arcTo(x+w, y, x+w, y+h, r);
+                    ctx.arcTo(x+w, y+h, x, y+h, r);
+                    ctx.arcTo(x, y+h, x, y, r);
+                    ctx.arcTo(x, y, x+w, y, r);
                     ctx.closePath();
                     ctx.save();
                     ctx.clip();
-                    ctx.drawImage(userIcon,xywh.touchX,xywh.y,xywh.w,xywh.h);
+                    ctx.drawImage(userIcon,xywh.x,xywh.y,xywh.w,xywh.h);
                     ctx.restore();
                 }
             }
             if(obj.selectAreaType == "Logo"){
                 if(document.querySelector("#logo_"+gui+"_"+index+"_"+(i+1))){
-                    ctx.drawImage($("#logo_"+gui+"_"+index+"_"+(i+1))[0],xywh.touchX,xywh.y,xywh.w,xywh.h)
+                    ctx.drawImage($("#logo_"+gui+"_"+index+"_"+(i+1))[0],xywh.x,xywh.y,xywh.w,xywh.h)
                 }
             }
+
+            if(obj.selectAreaType == "Phone"){
+                if($('#isDrawPhone')[0].checked){
+                    // 这个是字体大小等于高
+                    var fontSize = xywh.h;
+                    ctx.font=`normal bold ${fontSize}px Arial`;
+                    ctx.fillStyle= obj.fontColor || "#000000";
+                    ctx.fillText(userInfo.phone,xywh.x + ((xywh.w - fontSize*6.2)/2) ,xywh.y + xywh.h * 0.87);
+                }
+            }
+
+
         }
     }
 }
@@ -511,17 +577,17 @@ function getAllImg(arr,index,gui,index2,cb) {
 
 // 选择海报记录
 function saveCheckPostersRecord(gui,url) {
-    $(loadMask).show()
-    $.ajax({
-        type:'post',
-        url:basePath+'app/poster/record/saveCheckPostersRecord',
-        dataType:"json",
-        data:{activityId:gui,imgUrl:url,userId:userId,partnerId:userCode},
-        success:function(res){
-
-        },
-        error:function () {
-            // methods.alert("请查看当前网络状况");
-        }
-    })
+    // $(loadMask).show()
+    // $.ajax({
+    //     type:'post',
+    //     url:basePath+'app/poster/record/saveCheckPostersRecord',
+    //     dataType:"json",
+    //     data:{activityId:gui,imgUrl:url,userId:userId,partnerId:userCode},
+    //     success:function(res){
+    //
+    //     },
+    //     error:function () {
+    //         // methods.alert("请查看当前网络状况");
+    //     }
+    // })
 }

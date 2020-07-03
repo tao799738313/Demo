@@ -45,6 +45,12 @@
 					padding: 5px;
 					margin: 5px 0;
 				}
+				 span input{
+				            display: inline-block;
+				            width: 40px;
+				            padding: 0;
+				            margin: 0;
+				        }
 		</style>
 	</head>
 	<body onselectstart="return false;" style="width: 100vw;height: 100vh;overflow: hidden;">
@@ -73,6 +79,9 @@
 				</p>
 				<p class="selectAreaBtn" onclick="selectAreaDo(this,'Head')" >
 					头像区域
+				</p>
+				<p class="selectAreaBtn cursor_pointer" onclick="selectAreaDo(this,'Phone')" >
+				            电话号码区域
 				</p>
 				<p onclick="returnBtn()">
 					后退

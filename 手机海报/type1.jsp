@@ -162,6 +162,20 @@
         <div id="copyVal"></div>
     </div>
 
+    <div id="remarkDiv" style="display: none;margin-bottom: 1rem;">
+        <div style="font-weight: 600;">
+            <span style="font-size: 0.64rem;margin-bottom: 2vw;">备注</span>
+        </div>
+        <div id="remark"></div>
+    </div>
+    <div style="display: flex;align-items:center;padding: 0.5rem 2rem;">
+        <div id="isDrawPhoneTishi" style="flex: 1;font-size: 0.7rem;font-weight: 600;color: #0c5ab9;">
+            当前海报显示手机号码
+        </div>
+        <div style="margin-right: 8px;">
+            <input class="weui-switch" type="checkbox" id="isDrawPhone" checked="checked" onchange="isDrawPhoneChange(this)">
+        </div>
+    </div>
     <div id="smallListDiv" style="max-height: 70vw;" ontouchstart="touchS()" ontouchmove="touchM()" ontouchend="touchE()">
         <div id="smallList">
 
@@ -191,7 +205,7 @@
     }
 </script>
 <script src="js/qrcode.min.js?_version=202004301431"></script>
-<script src="js/viewPage.js?_version=202005161332"></script>
+<script src="js/type1.js?_version=202005161332"></script>
 
 </body>
 </html>
