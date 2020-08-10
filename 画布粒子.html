@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<style>
+			        .none{
+			            display: none;
+			        }
+					        #cas{
+					            position: absolute;
+					            width: 100vw;
+					            height: 100vh;
+					            top: 0;
+					            left: 0;
+					            z-index: 5;
+					        }
+		</style>
+	</head>
+	<body>
+		<canvas id='cas'>浏览器不支持canvas</canvas>
+		<img src="img/head.jpg" id="phoneImg" class="ele none" data-dr="5" data-width="0.4" data-x="0.3" data-y="0.36" >
+		<img src="img/首页.jpg" id="phoneImg" class="ele none" data-dr="10" data-width="0.4" data-x="0.3" data-y="0.36" >
+		<script type="text/javascript">
+			
+			// 粒子动画
+			var dr = "";
+			var canvas = document.getElementById("cas"),
+			    ele = document.querySelectorAll(".ele"),
+			    ctx = canvas.getContext('2d');
+			
+			var canvas2 = document.createElement("canvas"),
+			    ctx2 = canvas2.getContext('2d');
+			
+			var focallength = 250, index = 0;
+			var img = new Image();
+			var pause;
+			var dots = [];
+			animateRunning = false;
+			canvas.width = window.innerWidth;
+			canvas.height = window.innerHeight;
+			
+			
+			
+			
+			var RAF = (function() {
+			    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function(callback) {
+			        return window.setTimeout(callback, 1000 / 500);
+			    };
+			})();
+			
+			var Dot = function(centerX, centerY, centerZ, radius, color) {
+			    this.dx = centerX;
+			    this.dy = centerY;
+			    this.dz = centerZ;
+			    this.tx = 0;
+			    this.ty = 0;
+			    this.tz = 0;
+			    this.z = centerZ;
+			    this.x = centerX;
+			    this.y = centerY;
+			    this.radius = radius;
+			    this.color = color;
+			};
+			
+			Dot.prototype = {
+			    paint: function() {
+			        ctx.save();
+			        ctx.fillStyle = "rgb(" + this.color.a + "," + this.color.b + "," + this.color.c + ")";
+			        // ctx.fillRect(canvas.width / 2 + (this.x - canvas.width / 2) * scale, canvas.height / 2 + (this.y - canvas.height / 2) * scale, this.radius * scale * 2, this.radius * scale * 2)
+			        ctx.fillRect(this.x, this.y, this.radius, this.radius)
+			        ctx.restore();
+			    }
+			};
+			
+			Array.prototype._forEach = function(callback) {
+			    for (var i = 0; i < this.length; i++) {
+			        callback.call(this[i]);
+			    }
+			}
+			
+			function eachEle() {
+			    pause = false
+			    dr = parseInt((window.outerWidth/150).toFixed(0))
+			    if (ele[index].getAttribute('data-dr') !== null) {
+			        dr = parseInt(ele[index].getAttribute('data-dr'))
+			    }
+			    // 清空画布
+			    ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
+			    ctx.clearRect(0, 0, canvas.width, canvas.height);
+			    if (ele[index].outerHTML.indexOf("img") >= 0) {
+			        img.crossOrigin = ""
+			        img.src = ele[index].src;
+			        imgload(img, function() {
+			            canvas2.width = window.innerWidth * ele[index].getAttribute('data-width');
+			            canvas2.height = canvas2.width * img.height/img.width;
+			            // 先把图画上去
+			            ctx2.drawImage(img, 0,0,canvas2.width,canvas2.height);
+			            // ctx.drawImage(img, canvas.width/2 - canvas.width/4, canvas.height/2 - canvas.height/4 ,canvas.width/2,canvas.height/2);
+			            // 剪成碎片，这些碎片还是整齐的
+			            var x = ele[index].getAttribute('data-x') * canvas.width;
+			            var y = ele[index].getAttribute('data-y') * canvas.height;
+			            dots = getimgData(x,y);
+			            // 给碎片设置随机的位置，画上去
+			            initAnimate();
+			        })
+			    }
+			}
+			
+			eachEle()
+			
+			function imgload(img, callback) {
+			    // if (img.complete) {
+			    //   callback.call(img);
+			    // }else {
+			    img.onload = function() {
+			        callback.call(this);
+			    }
+			    // }
+			}
+			
+			var lastTime;
+			function initAnimate() {
+			    dots._forEach(function() {
+			        // 给碎片设置随机的位置
+			        this.x = getRandom(0, canvas.width);
+			        this.y = getRandom(0, canvas.height);
+			        this.z = getRandom(-focallength, focallength);
+			
+			        this.tx = getRandom(0, canvas.width);
+			        this.ty = getRandom(0, canvas.height);
+			        this.tz = getRandom(-focallength, focallength);
+			    });
+			    // dots.sort(function(a, b) {
+			    //     return b.dx - a.dx;
+			    // });
+			    dots._forEach(function() {
+			        // 画上去
+			        this.paint();
+			    });
+			    lastTime = new Date();
+			    // 动画的过程是组成的过程
+			    animate();
+			}
+			
+			
+			function animate() {
+			    var thisTime = +new Date();
+			    ctx.save();
+			    ctx.globalCompositeOperation = 'destination-out';
+			    ctx.globalAlpha = 0.1;
+			    ctx.fillRect(0, 0, canvas.width, canvas.height);
+			    ctx.restore();
+			
+			    var sulv = 0.1;
+			    dots._forEach(function() {
+			        var dot = this;
+			        if (Math.abs(dot.dx - dot.x) <= dr && Math.abs(dot.dy - dot.y) <= dr && Math.abs(dot.dz - dot.z) <= dr) {
+			            dot.x = dot.dx;
+			            dot.y = dot.dy;
+			            dot.z = dot.dz;
+			            if (thisTime - lastTime > 100){
+			                pause = true;
+			            }
+			        } else {
+			            dot.x = dot.x + (dot.dx - dot.x) * sulv;
+			            dot.y = dot.y + (dot.dy - dot.y) * sulv;
+			            dot.z = dot.z + (dot.dz - dot.z) * sulv;
+			            lastTime = +new Date()
+			        }
+			    });
+			    dots.sort(function(a, b) {
+			        return b.z - a.z;
+			    });
+			    dots._forEach(function() {
+			        this.paint();
+			    });
+			
+			    if (pause) {
+			        index == (ele.length - 1) ? index = 0 : index++;
+			        derection = true;
+			        pause = false;
+			
+			        // 循环
+					setTimeout(function(){
+						eachEle();
+					},2000)
+			        
+			       
+			    } else {
+			        RAF(animate)
+			    }
+			}
+			
+			function getRandom(a, b) {
+			    return Math.random() * (b - a) + a
+			}
+			
+			function getimgData(addX,addY) {
+			
+			    var imgData = ctx2.getImageData(0, 0, canvas2.width, canvas2.height);
+			    var dots = [];
+			    for (var x = 0; x < imgData.width; x += dr) {
+			        for (var y = 0; y < imgData.height; y += dr) {
+			            var i = (y * imgData.width + x) * 4;
+			            if (imgData.data[i + 3] > 128) {
+			                var dot = new Dot(x + addX , y +addY ,0, dr, {
+			                    a: imgData.data[i],
+			                    b: imgData.data[i + 1],
+			                    c: imgData.data[i + 2]
+			                });
+			                dots.push(dot);
+			            }
+			        }
+			    }
+			    return dots;
+			}
+		</script>
+	</body>
+</html>
