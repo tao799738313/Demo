@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<meta charset="utf-8">
+		<title></title>
+		<style>
+			span{
+				padding: 0 100px;
+				border: 1px solid;
+			}
+		</style>
+	</head>
+	<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<body>
+		<input type="" id="name" value="123" />
+		<input type="" class="phone" value="a" />
+		<input type="" class="phone" value="aaaaa" />
+	</body>
+	<script type="text/javascript">
+				
+				function getValAndCharm(){
+					var tishi = alert
+				        var flag = true
+				        var returnObj = {}
+				        var map = {
+				            "#name":{
+				                isTrim: true,  // 默认true
+				                isNull: false, // 不能为空
+				                title:"名字",
+				                reg:/[0-9]/,  // reg可以是function，返回true / false就行
+				                reg_msg:"", // 没有这个值就会提示title + "格式不对",
+				                returnKey:"", // 没有这个值就会用key值存
+				            },
+							".phone":{
+							    isTrim: true,  // 默认true
+							    isNull: true, // 不能为空
+							    title:"手机号码",
+							    reg:"^[a]",  // reg可以是function，返回true / false就行
+							    reg_msg:"", // 没有这个值就会提示title + "格式不对",
+							    returnKey:"", // 没有这个值就会用key值存
+							},
+				            "fun": function(res,tishi){
+								res.fun = "***********";
+								return true;
+								// console.log(123)
+				                // 如果是功能不支持的可以自己写逻辑,res是返回值,tishi是提示弹窗
+				            }
+				        }
+						for(var key in map){
+							
+							if(!flag){
+								return;
+							}
+							
+							if(Object.prototype.toString.call(map[key]) == "[object Function]"){
+								if(!map[key](returnObj,tishi)){
+									flag = false 
+								}
+							}else{
+								
+								var obj = map[key];
+								var dom = $(key);
+								var len = dom.length;
+								if(len == 0){
+									if(obj.returnKey){
+										returnObj[obj.returnKey] = charm("","",obj);
+									}else{
+										returnObj[key] = charm("","",obj);
+									}
+								}else if(len == 1){
+									if(obj.returnKey){
+										returnObj[obj.returnKey] = charm("",dom.val(),obj);
+									}else{
+										returnObj[key] = charm("",dom.val(),obj);
+									}
+								}else{
+									if(obj.returnKey){
+										returnObj[obj.returnKey] = [];
+									}else{
+										returnObj[key] = [];
+									}
+									for(var i=0;i<len;i++){
+										if(obj.returnKey){
+											returnObj[obj.returnKey].push(charm(i,$(dom[i]).val(),obj));
+										}else{
+											returnObj[key].push(charm(i,$(dom[i]).val(),obj));
+										}
+										if(!flag){
+											return;
+										}
+									}
+								}
+							}
+						}
+						
+						
+						function charm(index,val,obj){
+							
+							if(obj.isTrim){
+								val.trim();
+							}
+							
+							if(obj.isNull && !val){
+								if((/^[0-9]{1,}$/).test(index)){
+									tishi(obj.title + "第" + (index + 1) + "不能为空");
+								}else{
+									tishi(obj.title + "不能为空");
+								}
+								flag = false;
+								return;
+							}
+							
+							if(obj.reg){
+								var regFlag = true
+								if(Object.prototype.toString.call(obj.reg) == "[object RegExp]"){
+									regFlag = reg(obj.reg,val,index,obj)
+								}else if(Object.prototype.toString.call(obj.reg) == "[object String]"){
+									regFlag = reg(new RegExp(obj.reg),val,index,obj)
+								}else{
+									// 函数
+									regFlag = obj.reg(val)
+								}
+								if(!regFlag){
+									if((/^[0-9]{1,}$/).test(index)){
+										tishi(obj.title + "第" + (index + 1) + "格式不对");
+									}else{
+										tishi(obj.title + "格式不对");
+									}
+									flag = false;
+									return;
+								}
+							}
+							
+							return val;
+						}
+						
+						function reg(reg,val,index,obj){
+							if(reg.test(val)){
+								return true;
+							}else{
+								return false;
+							}
+						}
+						
+						if(flag){
+							console.log(returnObj)
+							return returnObj;
+						}
+				    }
+	</script>
+</html>

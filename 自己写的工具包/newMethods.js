@@ -160,11 +160,13 @@
             search = search.split("&")
             search.forEach(function(str,index){
                 var arr = str.split("=")
-                if(blackArr.indexOf(arr[0]) == -1){
-                    if(map[arr[0]]){
-                        map[arr[0]].push(arr[1])
-                    }else{
-                        map[arr[0]] = [arr[1] || ""]
+                if(arr[0] !="" && arr[1] !="") {
+                    if (blackArr.indexOf(arr[0]) == -1) {
+                        if (map[arr[0]]) {
+                            map[arr[0]].push(arr[1])
+                        } else {
+                            map[arr[0]] = [arr[1] || ""]
+                        }
                     }
                 }
             })
@@ -185,6 +187,7 @@
 
     function reload() {
         var link = getSearchMap("",["_v"],1)
+        location.href = location.origin + location.pathname + "?" + link + "&_v=" + new Date().getTime();
     }
 
     function charm(charmObj,dataObj){
