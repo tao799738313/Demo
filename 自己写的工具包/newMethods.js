@@ -16,6 +16,7 @@
         idCard : /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/,
         num:/\d+/g,
     }
+    var ENV = "1"; // 1 公众号， 2 企业号
     var thisGui = getGui();
     var loadMask = loadMask();
     var doc = location.href.indexOf('doc');
@@ -26,26 +27,29 @@
     var cookieObj = JSON.parse(decodeURIComponent(getCookie("yq_hz_user_" + accountId).replace(/(^\"*)|(\"*$)/g, "")));
     // 企业号的 userId = methods.getCookie("yq_qy_userid_" + agentId);
     var userId = cookieObj.userId;
-    // 企业号没有openId
+    // 公众号用openId
     var openId = cookieObj.openId;
     return  (function(){
         rem();
         ios();
-        setFontSize();
-        // hideOptionMenu();
+        hideOptionMenu();
+        init();
         return {
+            ENV:ENV,
             basePath:basePath, // ajax请求的前缀
             accountId:accountId,
             agentId:agentId,
             cookieObj:cookieObj,  // cookie的信息都在这里
             userId:userId,
             openId:openId,
-            appSrc:'http://218.244.149.31:9901/',  //这个是图片文件的前缀，每个项目的图片前缀都不一样，是每个项目都要改的
+            // 这个是图片文件的前缀，每个项目的图片前缀都不一样，是每个项目都要改的
+            appSrc:'http://218.244.149.31:9901/',  // http://wxtest.yunqunet.net/，http://47.110.60.215/ ，http://218.244.149.31:9901/
             thisGui:thisGui,
             loadMask:loadMask,
             regObj:regObj,
             getSearchMap:getSearchMap,
             getLink:getLink,
+            reload:reload, // 刷新页面
             title:title,
             getQueryString:getQueryString,
             charm:charm,  // 数据校验，用于提交
@@ -71,11 +75,11 @@
             rollTo:rollTo,  // 滚动到最上面
             //在这下面一下的方法是需要jq支持的
             addScroll:addScroll,   // 下拉加载
-            hideOptionMenu:hideOptionMenu,  // 隐藏全部
+            hideOptionMenu:hideOptionMenu,  // 隐藏全部菜单按钮
             showOptionMenu:showOptionMenu,
             closeWindow:closeWindow,
             getSignatureByJsapi:getSignatureByJsapi,  //这个是每个项目都要改的
-            // 公众号才有关注和绑定
+            // 公众号才有关注和绑定，企业号没有
             isfollow:isfollow,  //这个是每个项目都要改的
             tobinding:tobinding,  //这个是每个项目都要改的
             follow_tobinding:follow_tobinding,
@@ -87,6 +91,14 @@
         phone : /^[1]{1}[0-9]{10}$/,
         idCard : /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/,
         num:/\d+/g,
+    }
+
+    function init() {
+        if(ENV=="1"){
+            setFontSize();
+        }else if(ENV=="2"){
+
+        }
     }
 
     function rem(){
@@ -227,24 +239,37 @@
 
     }
 
+    function getValAndCharm(){
+        var flag = true
+        var returnObj = {}
+        var map = {
+            "id/class/name":{
+                isTrim: true,  // 默认true
+                isNull: false, // 不能为空
+                title:"手机号码",
+                reg:"",  // reg可以是function，返回true / false就行
+                reg_msg:"", // 没有这个值就会提示title + "格式不对",
+                returnKey:"", // 没有这个值就会用key值存
+            },
+            "fun": function(res,tishi,flag){
+                // 如果是功能不支持的可以自己写逻辑,res是返回值,tishi是提示弹窗,错误需要把flag改成false并且提示并且return
+            }
+        }
+
+    }
+
 
    function setFontSize() {
        isWX(function () {
            // 设置网页字体为默认大小
            WeixinJSBridge.invoke('setFontSizeCallback', {
-
                'fontSize': 0
-
            });
            // 重写设置网页字体大小的事件
            WeixinJSBridge.on('menu:setfont', function () {
-
                WeixinJSBridge.invoke('setFontSizeCallback', {
-
                    'fontSize': 0
-
                });
-
            });
        })
    }
@@ -715,21 +740,52 @@
 
     function hideOptionMenu() {
         isWX(function () {
-            // invoke和call现在已经废弃了,现在都是用wx.xxxx()
-            WeixinJSBridge.call('hideOptionMenu');  //wx.showOptionMenu();
+            if(ENV=="1"){
+                WeixinJSBridge.call('hideOptionMenu');
+            }else if(ENV=="2"){
+                getSignatureByJsapi({
+                    accountId:accountId,
+                    debug:false,
+                    jsApiList:["hideOptionMenu"],
+                    ready:function () {
+                        wx.hideOptionMenu();
+                    }
+                })
+            }
         })
     }
 
     function showOptionMenu() {
         isWX(function () {
-            // invoke和call现在已经废弃了,现在都是用wx.xxxx()
-            WeixinJSBridge.call('showOptionMenu');  //wx.showOptionMenu();
+            if(ENV=="1"){
+                WeixinJSBridge.call('showOptionMenu');
+            }else if(ENV=="2"){
+                getSignatureByJsapi({
+                    accountId:accountId,
+                    debug:false,
+                    jsApiList:["showOptionMenu"],
+                    ready:function () {
+                        wx.showOptionMenu();
+                    }
+                })
+            }
         })
     }
 
     function closeWindow() {
         isWX(function () {
-            WeixinJSBridge.call('closeWindow');
+            if(ENV=="1"){
+                WeixinJSBridge.call('closeWindow');
+            }else if(ENV=="2"){
+                getSignatureByJsapi({
+                    accountId:accountId,
+                    debug:false,
+                    jsApiList:["closeWindow"],
+                    ready:function () {
+                        wx.closeWindow();
+                    }
+                })
+            }
         })
     }
 
@@ -743,57 +799,108 @@
     //     }
     // })
     function getSignatureByJsapi(opt){
-        var link = getLink()
+
         isWX(function () {
-            $.ajax({
-                type: 'POST',
-                url: basePath + 'app/data/getSignatureByJsapi',
-                dataType: 'json',
-                data: {
-                    accountId: opt.accountId || accountId,
-                    url: encodeURIComponent(location.href)
-                }
-            }).done(function (rs) {
-                if (rs.success) {
-                    wx.config({
-                        beta: true,// 必须这么写，否则wx.invoke调用形式的jsapi会有问题
-                        debug: opt.debug || false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-                        appId: rs.appId, // 必填，公众号的唯一标识
-                        timestamp: rs.timestamp, // 必填，生成签名的时间戳
-                        nonceStr: rs.noncestr, // 必填，生成签名的随机串
-                        signature: rs.signature,// 必填，签名，见附录1
-                        jsApiList: opt.jsApiList || [
-                            'checkJsApi',  //判断当前客户端版本是否支持指定JS接口
-                            'updateAppMessageShareData',  //“分享给朋友”及“分享到QQ”1.4
-                            'updateTimelineShareData', //“分享到朋友圈”及“分享到QQ空间”1.4
-                            'onMenuShareAppMessage', //“分享给朋友”及“分享到QQ
-                            'onMenuShareTimeline', //“分享到朋友圈”及“分享到QQ空间
-                        ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
-                    });
-                    wx.ready(function () {
-                        if (opt.ready) {
-                            opt.ready()
-                        } else {
-                            //“分享给朋友”及“分享到QQ”1.4
-                            wx.onMenuShareAppMessage({
-                                title: $('title').html(), // 分享标题
-                                desc: $('title').html(), // 分享描述
-                                link: link,
-                                imgUrl: basePath + 'doc/app/common/img/share.png', // 分享图标
-                            })
-                            //“分享到朋友圈”及“分享到QQ空间”1.4
-                            wx.onMenuShareTimeline({
-                                title: $('title').html(), // 分享标题
-                                link: link,
-                                imgUrl: basePath + 'doc/app/common/img/share.png', // 分享图标
-                            })
+            var link = getLink()
+            if(ENV=="1"){
+                $.ajax({
+                    type: 'POST',
+                    url: basePath + 'app/data/getSignatureByJsapi',
+                    dataType: 'json',
+                    data: {
+                        accountId: opt.accountId || accountId,
+                        url: encodeURIComponent(location.href)
+                    },
+                    success:function (rs) {
+                        if (rs.success) {
+                            wx.config({
+                                beta: true,// 必须这么写，否则wx.invoke调用形式的jsapi会有问题
+                                debug: opt.debug || false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                                appId: rs.appId, // 必填，公众号的唯一标识
+                                timestamp: rs.timestamp, // 必填，生成签名的时间戳
+                                nonceStr: rs.noncestr, // 必填，生成签名的随机串
+                                signature: rs.signature,// 必填，签名，见附录1
+                                jsApiList: opt.jsApiList || [
+                                    'updateAppMessageShareData',  //“分享给朋友”及“分享到QQ”1.4
+                                    'updateTimelineShareData', //“分享到朋友圈”及“分享到QQ空间”1.4
+                                    'onMenuShareAppMessage', //“分享给朋友”及“分享到QQ
+                                    'onMenuShareTimeline', //“分享到朋友圈”及“分享到QQ空间
+                                ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+                            });
+                            wx.ready(function () {
+                                if (opt.ready) {
+                                    opt.ready()
+                                } else {
+                                    //“分享给朋友”及“分享到QQ”1.4
+                                    wx.onMenuShareAppMessage({
+                                        title: $('title').html(), // 分享标题
+                                        desc: $('title').html(), // 分享描述
+                                        link: link,
+                                        imgUrl: basePath + 'doc/app/common/img/share.png', // 分享图标
+                                    })
+                                    //“分享到朋友圈”及“分享到QQ空间”1.4
+                                    wx.onMenuShareTimeline({
+                                        title: $('title').html(), // 分享标题
+                                        link: link,
+                                        imgUrl: basePath + 'doc/app/common/img/share.png', // 分享图标
+                                    })
+                                }
+                            });
+                            wx.error(function (res) {
+                                console.log(res)
+                            });
                         }
-                    });
-                    wx.error(function (res) {
-                        console.log(res)
-                    });
-                }
-            });
+                    }
+                })
+            }else if(ENV == "2"){
+                $.ajax({
+                    type: 'POST',
+                    url: basePath+'app/qyweixin/oauth2/getQySignatureByJsapi',
+                    dataType: 'json',
+                    data: {
+                        accountId: opt.accountId || accountId,
+                        url: encodeURIComponent(location.href)
+                    },
+                    success:function (rs) {
+                        if (rs.success) {
+                            wx.config({
+                                beta: true,// 必须这么写，否则wx.invoke调用形式的jsapi会有问题
+                                debug: opt.debug || false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                                appId: rs.bean.appId, // 必填，公众号的唯一标识
+                                timestamp: rs.bean.timestamp, // 必填，生成签名的时间戳
+                                nonceStr: rs.bean.noncestr, // 必填，生成签名的随机串
+                                signature: rs.bean.signature,// 必填，签名，见附录1
+                                jsApiList: opt.jsApiList || [
+                                    'onMenuShareAppMessage', //“分享给朋友”及“分享到QQ
+                                    'onMenuShareTimeline', //“分享到朋友圈”及“分享到QQ空间
+                                ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+                            });
+                            wx.ready(function () {
+                                if (opt.ready) {
+                                    opt.ready()
+                                } else {
+                                    //“分享给朋友”及“分享到QQ”1.4
+                                    wx.onMenuShareAppMessage({
+                                        title: $('title').html(), // 分享标题
+                                        desc: $('title').html(), // 分享描述
+                                        link: link,
+                                        imgUrl: basePath + 'doc/app/common/img/share.png', // 分享图标
+                                    })
+                                    //“分享到朋友圈”及“分享到QQ空间”1.4
+                                    wx.onMenuShareTimeline({
+                                        title: $('title').html(), // 分享标题
+                                        link: link,
+                                        imgUrl: basePath + 'doc/app/common/img/share.png', // 分享图标
+                                    })
+                                }
+                            });
+                            wx.error(function (res) {
+                                console.log(res)
+                            });
+                        }
+                    }
+                })
+            }
         })
     }
 
@@ -810,6 +917,7 @@
     //
     //     }
     // })
+
     function isfollow(opt) {
         $.ajax({
             type: "post",
