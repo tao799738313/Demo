@@ -16,7 +16,9 @@
         idCard : /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/,
         num:/\d+/g,
     }
-    var ENV = "1"; // 1 公众号， 2 企业号
+    var wxIng = false;
+    var wxArr = [];
+    var ENV = "2"; // 1 公众号， 2 企业号
     var thisGui = getGui();
     var loadMask = loadMask();
     var doc = location.href.indexOf('doc');
@@ -24,17 +26,35 @@
     var accountId = getQueryString("accountId")
     // 公众号没有 agentId
     var agentId = getQueryString("agentId")
-    var cookieObj = JSON.parse(decodeURIComponent(getCookie("yq_hz_user_" + accountId).replace(/(^\"*)|(\"*$)/g, "")));
-    // 企业号的 userId = methods.getCookie("yq_qy_userid_" + agentId);
-    var userId = cookieObj.userId;
+    // var cookieObj = JSON.parse(decodeURIComponent(getCookie("yq_hz_user_" + accountId)));
+    if(ENV=="1"){
+        var cookieObj = JSON.parse(decodeURIComponent(getCookie("yq_hz_user_" + accountId).replace(/(^\"*)|(\"*$)/g, "")));
+        var userId = cookieObj.userId;
+    }else if(ENV=="2"){
+        var cookieObj = JSON.parse(decodeURIComponent(getCookie("yq_hz_user_" + agentId)));
+        var userId = getCookie("yq_qy_userid_" + agentId);
+    }
+
     // 公众号用openId
     var openId = cookieObj.openId;
     return  (function(){
         rem();
         ios();
-        hideOptionMenu();
+        hideOptionMenu()
         init();
+        setInterval(function () {
+            if(methods.wxIng){
+                return;
+            }else{
+                if(wxArr.length!=0){
+                    methods.wxIng = true;
+                    new_getSignatureByJsapi(wxArr[0])
+                }
+            }
+        },300)
         return {
+            wxIng: wxIng,
+            wxArr: wxArr,
             ENV:ENV,
             basePath:basePath, // ajax请求的前缀
             accountId:accountId,
@@ -43,7 +63,7 @@
             userId:userId,
             openId:openId,
             // 这个是图片文件的前缀，每个项目的图片前缀都不一样，是每个项目都要改的
-            appSrc:'http://218.244.149.31:9901/',  // http://wxtest.yunqunet.net/，http://47.110.60.215/ ，http://218.244.149.31:9901/
+            appSrc:'http://wxtest.yunqunet.net/',  // http://wxtest.yunqunet.net/，http://47.110.60.215/ ，http://218.244.149.31:9901/
             thisGui:thisGui,
             loadMask:loadMask,
             regObj:regObj,
@@ -72,6 +92,7 @@
             Alert2:Alert2, // 卓卓要求定制的
             Comfirm:Comfirm,
             ts:ts,
+            shareMask:shareMask,
             rollTo:rollTo,  // 滚动到最上面
             //在这下面一下的方法是需要jq支持的
             addScroll:addScroll,   // 下拉加载
@@ -197,6 +218,15 @@
         return ""
     }
 
+    // 打开分享弹窗,需要vuex.css
+    function shareMask(str) {
+        $('body').append(`<div class="weui-share" onclick="$(this).remove();">
+                <div class="weui-share-box">
+                ${str || "点击右上角发送给指定朋友或分享到朋友圈"} <i></i>
+                </div>
+                </div>`)
+    }
+
     function reload() {
         var link = getSearchMap("",["_v"],1)
         location.href = location.origin + location.pathname + "?" + link + "&_v=" + new Date().getTime();
@@ -259,20 +289,20 @@
     }
 
 
-   function setFontSize() {
-       isWX(function () {
-           // 设置网页字体为默认大小
-           WeixinJSBridge.invoke('setFontSizeCallback', {
-               'fontSize': 0
-           });
-           // 重写设置网页字体大小的事件
-           WeixinJSBridge.on('menu:setfont', function () {
-               WeixinJSBridge.invoke('setFontSizeCallback', {
-                   'fontSize': 0
-               });
-           });
-       })
-   }
+    function setFontSize() {
+        isWX(function () {
+            // 设置网页字体为默认大小
+            WeixinJSBridge.invoke('setFontSizeCallback', {
+                'fontSize': 0
+            });
+            // 重写设置网页字体大小的事件
+            WeixinJSBridge.on('menu:setfont', function () {
+                WeixinJSBridge.invoke('setFontSizeCallback', {
+                    'fontSize': 0
+                });
+            });
+        })
+    }
 
 
     //黑色
@@ -798,8 +828,14 @@
     //
     //     }
     // })
-    function getSignatureByJsapi(opt){
 
+
+    function getSignatureByJsapi(opt){
+        wxArr.push(opt)
+    }
+
+
+    function new_getSignatureByJsapi(opt) {
         isWX(function () {
             var link = getLink()
             if(ENV=="1"){
@@ -903,6 +939,7 @@
             }
         })
     }
+
 
     //是否关注
     // 使用

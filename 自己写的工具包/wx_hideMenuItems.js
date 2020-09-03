@@ -58,13 +58,11 @@ var tt_util = {
             cb();
         }
     },
-    // 只会公众号有用
     showOptionMenu: function() {
         this.isWX(function () {
             WeixinJSBridge.call('showOptionMenu');  //wx.showOptionMenu();
         })
     },
-    // 只会公众号有用
     hideOptionMenu: function() {
         this.isWX(function () {
             WeixinJSBridge.call('hideOptionMenu');  //wx.showOptionMenu();
@@ -72,9 +70,9 @@ var tt_util = {
     }
 }
 
-
-tt_util.hideOptionMenu()
-
+if(methods.ENV!="2"){
+    tt_util.hideOptionMenu()
+}
 
 /*
 *   这里
@@ -283,7 +281,6 @@ tt_util.hideOptionMenu()
             E = [],
             N = {
                 config: function(e) {
-                    alert(e.jsApiList)
 
                     if(e.jsApiList.indexOf("updateAppMessageShareData") != -1 || e.jsApiList.indexOf("onMenuShareAppMessage") != -1){
                         tt_util.appMessage = true;
@@ -295,12 +292,14 @@ tt_util.hideOptionMenu()
                     }else{
                         tt_util.timeline = false;
                     }
+
                     if(e.jsApiList.indexOf("showOptionMenu") == -1){
                         e.jsApiList.push("showOptionMenu")
                     }
                     if(e.jsApiList.indexOf("hideMenuItems") == -1){
                         e.jsApiList.push("hideMenuItems")
                     }
+
                     C = e, u("config", e);
                     var n = !1 !== C.check;
                     f(function() {
@@ -330,30 +329,37 @@ tt_util.hideOptionMenu()
                     }), m()
                 },
                 ready: function(e) {
+                    if(tt_util.flag){
+                        tt_util.flag = false
+                        0 != B.state ? e() : (L._completes.push(e), !T && C.debug && e());
+                        methods.wxArr.shift()
+                        methods.wxIng = false;
+                    }else{
+                        function f1() {
+                            if(!tt_util.appMessage && !tt_util.timeline){
 
-                    function f1() {
-                        if(!tt_util.appMessage && !tt_util.timeline){
-                            // 这里不再隐藏菜单了，想隐藏自己调用方法
-                        }else{
-                            tt_util.showOptionMenu();  // 公众号的
-                            wx.showOptionMenu();  // 企业号的，企业号的隐藏需要调用接口，在newMethods里隐藏
-                            // 调整字体不能隐藏
-                            var arr = ["menuItem:copyUrl","menuItem:editTag","menuItem:delete","menuItem:originPage","menuItem:readMode", "menuItem:openWithQQBrowser", "menuItem:openWithSafari","menuItem:share:email","menuItem:share:brand","menuItem:share:qq","menuItem:share:QZone","menuItem:share:weiboApp","menuItem:share:facebook","menuItem:setFont"]
-                            if(!tt_util.appMessage){
-                                arr.push("menuItem:share:appMessage")
+                            }else{
+                                tt_util.showOptionMenu();  // 公众号的
+                                wx.showOptionMenu();  // 企业号的，企业号的隐藏需要调用接口，在newMethods里隐藏
+                                // 调整字体不能隐藏
+                                var arr = ["menuItem:copyUrl","menuItem:editTag","menuItem:delete","menuItem:originPage","menuItem:readMode", "menuItem:openWithQQBrowser", "menuItem:openWithSafari","menuItem:share:email","menuItem:share:brand","menuItem:share:qq","menuItem:share:QZone","menuItem:share:weiboApp","menuItem:share:facebook","menuItem:setFont"]
+                                if(!tt_util.appMessage){
+                                    arr.push("menuItem:share:appMessage")
+                                }
+                                if(!tt_util.timeline){
+                                    arr.push("menuItem:share:timeline")
+                                }
+                                // 后隐藏
+                                wx.hideMenuItems({
+                                    menuList: arr
+                                });
                             }
-                            if(!tt_util.timeline){
-                                arr.push("menuItem:share:timeline")
-                            }
-                            // 后隐藏
-                            wx.hideMenuItems({
-                                menuList: arr
-                            });
                         }
+                        0 != B.state ? f1() : (L._completes.push(f1), !T && C.debug && f1());
+                        0 != B.state ? e() : (L._completes.push(e), !T && C.debug && e());
+                        methods.wxArr.shift()
+                        methods.wxIng = false;
                     }
-
-                    0 != B.state ? f1() : (L._completes.push(f1), !T && C.debug && f1())
-                    0 != B.state ? e() : (L._completes.push(e), !T && C.debug && e())
                 },
                 error: function(e) {
                     x < "6.0.2" || (-1 == B.state ? e(B.data) : L._fail = e)
