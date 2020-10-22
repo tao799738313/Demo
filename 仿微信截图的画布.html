@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body style="margin: 0;">
+		<div style="position: fixed;right: 9999px;">
+			<img id="img02" src="img/head.jpg" >
+			<img id="img01" src="img/首页.jpg" style="width: 100%;">
+			<img id="img03" src="./img/皮卡丘.jpg" >
+		</div>
+		<canvas id="canvas"></canvas>
+		<script type="text/javascript">
+			var canvas = document.querySelector('#canvas');
+			var ctx = canvas.getContext("2d");
+			var img01 = document.querySelector("#img01")
+			var img02 = document.querySelector("#img02")
+			var img03 = document.querySelector("#img03")
+			var mouseTimer = null;
+			var index = -1; //鼠标在未选中状态下的悬空index
+			var index_status_index = -1;  // 点击选中前提下，鼠标移动时是否处于当前选中的位置的上方
+			var status = -1; // 多种点击状态 -1 移动状态，click_index点击选中状态下
+			var isCanDrag = -1;
+			var mouseDown = -1;
+			var isCanDraw = -1;
+			var mouseDownXY = {}
+			var sizeStatus = -1;
+			var arr = [{
+				x: 50,y:50,w:300,h:300,color:"red"
+			},{
+				x: 150,y:180,w:200,h:200,color:"green"
+			},{
+				x: 200,y:200,w:100,h:100,color:"white"
+			},{
+				x: 40,y:550,w:270,h:270,color:"white"
+			}]
+			function init(e){
+				var w01 = img01.offsetWidth;
+				var h01 = img01.offsetHeight;
+				canvas.width = w01;
+				canvas.height = h01;
+				ctx.drawImage(img01,0,0,w01,h01)
+				var new_arr = JSON.parse(JSON.stringify(arr));
+				if(status == "click_index"){
+					new_arr.splice(index,1)
+					new_arr.push(arr[index])
+					new_arr.forEach(function(obj,idx){
+						if(idx==new_arr.length-1){
+							
+						}else{
+							ctx.beginPath();
+							ctx.rect( obj.x, obj.y, obj.w, obj.h );
+							ctx.fillStyle = obj.color;
+							ctx.fill();
+							ctx.closePath();
+						}
+					})
+					
+					// 绘制被点击的那个
+					var obj = new_arr[new_arr.length-1]
+					ctx.beginPath();
+					ctx.rect( obj.x, obj.y, obj.w, obj.h );
+					ctx.fillStyle = "black";
+					ctx.fill();
+					
+					if(mouseDown == -1){
+						if(e && ctx.isPointInPath(e.pageX, e.pageY)){
+						     index_status_index = index
+							 // 可以拖动（鼠标指针变化）
+							 isCanDrag = true
+						}else{
+							index_status_index = -1
+							isCanDrag = -1
+							sizeStatus = -1
+						}
+					}
+					
+					
+				    ctx.closePath();
+				
+
+					ctx.beginPath();
+					ctx.rect( obj.x+3, obj.y+3, obj.w-6, obj.h-6 );
+					ctx.fillStyle = obj.color;
+					ctx.fill();
+					if(mouseDown == -1){
+						if(e && ctx.isPointInPath(e.pageX, e.pageY)){
+							 // 不能可以拖动
+							 isCanDrag = -1
+							 sizeStatus = -1
+						}
+					}
+					ctx.closePath();
+					
+					// 画8个点，拉动可以方法缩小放大
+					ctx.beginPath();
+					ctx.arc(obj.x,obj.y, 4, 0, Math.PI*2, false); // 绘制圆圈轨迹,最后一个参数是从上半圆还是下半圆
+					ctx.stroke();
+					if(mouseDown == -1){
+						if(e && ctx.isPointInPath(e.pageX, e.pageY)){
+							isCanDrag = -1
+							sizeStatus = "1"
+						}
+					}
+					ctx.closePath();
+					
+					ctx.beginPath();
+					ctx.arc(obj.x + obj.w/2 ,obj.y, 4, 0, Math.PI*2, false); // 绘制圆圈轨迹,最后一个参数是从上半圆还是下半圆
+					ctx.stroke();
+					if(mouseDown == -1){
+						if(e && ctx.isPointInPath(e.pageX, e.pageY)){
+							isCanDrag = -1
+							sizeStatus = "2"
+						}
+					}
+					ctx.closePath();
+					
+					ctx.beginPath();
+					ctx.arc(obj.x + obj.w,obj.y, 4, 0, Math.PI*2, false); // 绘制圆圈轨迹,最后一个参数是从上半圆还是下半圆
+					ctx.stroke();
+					if(mouseDown == -1){
+						if(e && ctx.isPointInPath(e.pageX, e.pageY)){
+							isCanDrag = -1
+							sizeStatus = "3"
+						}
+					}
+					ctx.closePath();
+					
+					ctx.beginPath();
+					ctx.arc(obj.x,obj.y + obj.h/2, 4, 0, Math.PI*2, false); // 绘制圆圈轨迹,最后一个参数是从上半圆还是下半圆
+					ctx.stroke();
+					if(mouseDown == -1){
+						if(e && ctx.isPointInPath(e.pageX, e.pageY)){
+							isCanDrag = -1
+							sizeStatus = "4"
+						}
+					}
+					ctx.closePath();
+					
+					ctx.beginPath();
+					ctx.arc(obj.x+ obj.w,obj.y+obj.h/2, 4, 0, Math.PI*2, false); // 绘制圆圈轨迹,最后一个参数是从上半圆还是下半圆
+					ctx.stroke();
+					if(mouseDown == -1){
+						if(e && ctx.isPointInPath(e.pageX, e.pageY)){
+							isCanDrag = -1
+							sizeStatus = "6"
+						}
+					}
+					ctx.closePath();
+					
+					ctx.beginPath();
+					ctx.arc(obj.x,obj.y+obj.h, 4, 0, Math.PI*2, false); // 绘制圆圈轨迹,最后一个参数是从上半圆还是下半圆
+					ctx.stroke();
+					if(mouseDown == -1){
+						if(e && ctx.isPointInPath(e.pageX, e.pageY)){
+							isCanDrag = -1
+							sizeStatus = "7"
+						}
+					}
+					ctx.closePath();
+					
+					ctx.beginPath();
+					ctx.arc(obj.x+ obj.w/2,obj.y+obj.h, 4, 0, Math.PI*2, false); // 绘制圆圈轨迹,最后一个参数是从上半圆还是下半圆
+					ctx.stroke();
+					if(mouseDown == -1){
+						if(e && ctx.isPointInPath(e.pageX, e.pageY)){
+							isCanDrag = -1
+							sizeStatus = "8"
+						}
+					}
+					ctx.closePath();
+					
+					ctx.beginPath();
+					ctx.arc(obj.x+ obj.w,obj.y+obj.h, 4, 0, Math.PI*2, false); // 绘制圆圈轨迹,最后一个参数是从上半圆还是下半圆
+					ctx.stroke();
+					if(mouseDown == -1){
+						if(e && ctx.isPointInPath(e.pageX, e.pageY)){
+							isCanDrag = -1
+							sizeStatus = "9"
+						}
+					}
+					ctx.closePath();
+					
+				}else{
+					index = -1
+					for(var x = new_arr.length-1;x>=0;x--){
+						if(index != -1){
+							break;
+						}
+						ctx.beginPath();
+						ctx.rect(new_arr[x].x,new_arr[x].y,new_arr[x].w,new_arr[x].h);
+						if(e && ctx.isPointInPath(e.pageX, e.pageY)){
+							index = x
+						}
+						ctx.closePath();
+					}
+					
+					new_arr.forEach(function(obj,idx){
+						if(idx==index){
+							var obj = new_arr[index]
+							ctx.beginPath();
+							ctx.rect( obj.x, obj.y, obj.w, obj.h );
+							ctx.fillStyle = "black";
+							ctx.fill();
+							ctx.closePath();
+							ctx.beginPath();
+							ctx.rect( obj.x+3, obj.y+3, obj.w-6, obj.h-6 );
+							ctx.fillStyle = obj.color;
+							ctx.fill();
+						}else{
+							ctx.beginPath();
+							ctx.rect( obj.x, obj.y, obj.w, obj.h );
+							ctx.fillStyle = obj.color;
+							ctx.fill();
+							ctx.closePath();
+						}
+					})
+					// if(index != -1){
+					// 	var obj = new_arr[index]
+					// 	ctx.beginPath();
+					// 	ctx.rect( obj.x, obj.y, obj.w, obj.h );
+					// 	ctx.fillStyle = "black";
+					// 	ctx.fill();
+					// 	ctx.closePath();
+					// 	ctx.beginPath();
+					// 	ctx.rect( obj.x+3, obj.y+3, obj.w-6, obj.h-6 );
+					// 	ctx.fillStyle = obj.color;
+					// 	ctx.fill();
+					// }
+				}
+			}
+			
+			
+			
+			
+			setTimeout(function(){
+				init();
+			},300)
+			
+			canvas.addEventListener("mousemove",function(e){
+				 clearTimeout(mouseTimer);
+				    mouseTimer = setTimeout(function(){
+				        // 清空画布
+				        ctx.clearRect(0,0,canvas.width, canvas.height);
+				        init(e);
+						if(isCanDrag == true){
+							document.querySelector('#canvas').style.cursor = "move"
+							if(mouseDown == true){
+								yidongX = e.x - mouseDownXY.x
+								yidongY = e.y - mouseDownXY.y
+								arr[index].x = mouseDownXY.yuanX + yidongX
+								arr[index].y = mouseDownXY.yuanY + yidongY
+							}
+						}else if(isCanDrag == -1){
+							if(sizeStatus == "4" || sizeStatus == "6"){
+								document.querySelector('#canvas').style.cursor = "e-resize"
+								if(mouseDown == true){
+									if(sizeStatus == "4"){
+										var yuanX = arr[index].x
+										var yuanW = arr[index].w
+										arr[index].x = e.x;
+										arr[index].w = yuanW + yuanX - e.x
+									}
+									if(sizeStatus == "6"){
+										
+									}
+								}
+							}else if(sizeStatus == "2" || sizeStatus == "8"){
+								document.querySelector('#canvas').style.cursor = "n-resize"
+							}else if(sizeStatus == "3" || sizeStatus == "7"){
+								document.querySelector('#canvas').style.cursor = "ne-resize"
+							}else if(sizeStatus == "1" || sizeStatus == "9"){
+								document.querySelector('#canvas').style.cursor = "nw-resize"
+							}else{
+								
+								document.querySelector('#canvas').style.cursor = "auto"
+							}
+							
+						}
+				    },10);
+			})
+			
+			canvas.addEventListener("click",function(e){
+				 if(index == -1){
+					 status = -1
+					 ctx.clearRect(0,0,canvas.width, canvas.height);
+					 init(e);
+				 }else{
+					 if(status == -1){
+						 status = "click_index"
+						 index_status_index = -1
+						 ctx.clearRect(0,0,canvas.width, canvas.height);
+						 init(e);
+					 }else if(status == "click_index"){
+						 if(index_status_index != index){
+							 index = -1
+							 status = -1
+							 index_status_index = -1
+							 ctx.clearRect(0,0,canvas.width, canvas.height);
+							 init(e);
+						 }
+					 }
+				 }
+				 
+			})
+			
+			
+			canvas.addEventListener("mousedown",function(e){
+				 mouseDown = -1
+				 if(isCanDraw == -1){
+					 
+				 }else{
+					 
+				 }
+				 if(isCanDrag == -1){
+					 
+				 }else{
+					 mouseDown = true
+					 mouseDownXY = {
+						 x: e.x,
+						 y: e.y,
+						 yuanX: arr[index].x,
+						 yuanY: arr[index].y
+					 }
+				 }
+				 if(sizeStatus == -1){
+					 
+				 }else{
+					mouseDown = true
+				 }
+			})
+			
+			
+			canvas.addEventListener("mouseup",function(e){
+				 mouseDown = -1
+				 console.log("松开")
+			})
+			
+		
+			
+		</script>
+	</body>
+</html>

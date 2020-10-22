@@ -10,15 +10,14 @@
         root.methods = factory();
     }
 }(this, function() {
-
     var regObj = {
         phone : /^[1]{1}[0-9]{10}/,
         idCard : /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/,
         num:/\d+/g,
     }
-    var wxIng = false;
-    var wxArr = [];
-    var ENV = "2"; // 1 公众号， 2 企业号
+    // var wxIng = false;
+    // var wxArr = [];
+    var ENV = "2"; // 1 公众号， 2 企业号,3 out文件夹
     var thisGui = getGui();
     var loadMask = loadMask();
     var doc = location.href.indexOf('doc');
@@ -28,33 +27,23 @@
     var agentId = getQueryString("agentId")
     // var cookieObj = JSON.parse(decodeURIComponent(getCookie("yq_hz_user_" + accountId)));
     if(ENV=="1"){
-        var cookieObj = JSON.parse(decodeURIComponent(getCookie("yq_hz_user_" + accountId).replace(/(^\"*)|(\"*$)/g, "")));
-        var userId = cookieObj.userId;
+        var cookieObj = JSON.parse(decodeURIComponent(getCookie("yq_hz_user_" + accountId).replace(/(^\"*)|(\"*$)/g, ""))) || {};
+        var userId = cookieObj.userId || "";
+        // 公众号用openId
+        var openId = cookieObj.openId || "";
     }else if(ENV=="2"){
-        var cookieObj = JSON.parse(decodeURIComponent(getCookie("yq_hz_user_" + agentId)));
-        var userId = getCookie("yq_qy_userid_" + agentId);
+        var cookieObj = JSON.parse(decodeURIComponent(getCookie("yq_hz_user_" + agentId))) || {};
+        var userId = getCookie("yq_qy_userid_" + agentId) || "";
     }
 
-    // 公众号用openId
-    var openId = cookieObj.openId;
     return  (function(){
         rem();
         ios();
-        hideOptionMenu()
         init();
-        setInterval(function () {
-            if(methods.wxIng){
-                return;
-            }else{
-                if(wxArr.length!=0){
-                    methods.wxIng = true;
-                    new_getSignatureByJsapi(wxArr[0])
-                }
-            }
-        },300)
+        // hideOptionMenu();
         return {
-            wxIng: wxIng,
-            wxArr: wxArr,
+            // wxIng: wxIng,
+            // wxArr: wxArr,
             ENV:ENV,
             basePath:basePath, // ajax请求的前缀
             accountId:accountId,
@@ -67,6 +56,8 @@
             thisGui:thisGui,
             loadMask:loadMask,
             regObj:regObj,
+            agentConfig:agentConfig,
+            zhuanfa:zhuanfa,
             getSearchMap:getSearchMap,
             getLink:getLink,
             reload:reload, // 刷新页面
@@ -755,7 +746,7 @@
 
     function isWX(cb) {
         // cb()
-        // return;
+        // 这个是异步的，会导致执行顺序出错，这里禁用了
         if (typeof WeixinJSBridge == "undefined") {
             if (document.addEventListener) {
                 document.addEventListener('WeixinJSBridgeReady', cb, false);
@@ -830,12 +821,13 @@
     // })
 
 
-    function getSignatureByJsapi(opt){
-        wxArr.push(opt)
-    }
+    // function getSignatureByJsapi(opt){
+    //     console.log("存入" + opt.jsApiList)
+    //     wxArr.push(opt)
+    // }
 
 
-    function new_getSignatureByJsapi(opt) {
+    function getSignatureByJsapi(opt) {
         isWX(function () {
             var link = getLink()
             if(ENV=="1"){
@@ -940,6 +932,106 @@
         })
     }
 
+    function agentConfig(opt) {
+        if(ENV != "2"){
+            return;
+        }
+        isWX(function () {
+            $.ajax({
+                type: 'POST',
+                url: basePath+'app/qyweixin/oauth2/getQySignatureByJsapi',
+                dataType: 'json',
+                data: {
+                    agentId: opt.agentId || agentId,
+                    accountId: opt.accountId || accountId,
+                    url: encodeURIComponent(location.href)
+                }
+            }).done(function (rs) {
+                if (rs.success) {
+                    wx.agentConfig({
+                        beta: true,// 必须这么写，否则wx.invoke调用形式的jsapi会有问题
+                        debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                        corpid: rs.bean.appId, // 必填，企业微信的corpid，必须与当前登录的企业一致
+                        agentid: rs.bean.agentId, // 必填，企业微信的应用id （e.g. 1000247）
+                        timestamp: rs.bean.timestamp, // 必填，生成签名的时间戳
+                        nonceStr: rs.bean.noncestr, // 必填，生成签名的随机串
+                        signature: rs.bean.signature,// 必填，签名，见附录-JS-SDK使用权限签名算法
+                        jsApiList: opt.jsApiList || ['sendChatMessage','getContext'], //必填
+                        success: function() {
+                            if(opt.success){
+                                opt.success();
+                            }else{
+                                // 获取页面入口
+                                wx.invoke('getContext', {
+                                }, function(res){
+                                    if(res.err_msg == "getContext:ok"){
+                                        // contact_profile	从联系人详情进入
+                                        // single_chat_tools	从单聊会话的工具栏进入
+                                        // group_chat_tools	从群聊会话的工具栏进入
+                                        // normal	除以上场景之外进入，例如工作台，聊天会话等
+                                        if(res.entry == "single_chat_tools" || res.entry == "group_chat_tools"){
+                                            // 在这个显示转发按钮
+                                            opt.zhuanfa();
+                                        }
+                                    }else {
+                                        //错误处理
+                                    }
+                                });
+                            }
+                        },
+                        fail: function(res) {
+                            alert("wx.agentConfig失败了")
+                        }
+                    });
+                }
+            });
+        })
+    }
+
+    function zhuanfa(text_media_id_newsObj,type) {
+        if(ENV != "2"){ return; }
+        isWX(function () {
+            // type 可以是 text，image，voice，video，file,news
+            if(!text_media_id_newsObj || !type){ return; }
+            if(type == "text"){
+                wx.invoke('sendChatMessage', {
+                    msgtype:"text", //消息类型，必填
+                    text: {
+                        content: text_media_id_newsObj, //文本内容
+                    }
+                }, function(res) {
+                    if (res.err_msg == 'sendChatMessage:ok') {
+                        //发送成功
+                    }
+                })
+            }else if(type == "news"){
+                wx.invoke('sendChatMessage', {
+                    msgtype:"news", //消息类型，必填
+                    news:{
+                        link: text_media_id_newsObj.link, //H5消息页面url 必填
+                        title: text_media_id_newsObj.title, //H5消息标题
+                        desc: text_media_id_newsObj.desc, //H5消息摘要
+                        imgUrl: text_media_id_newsObj.imgUrl, //H5消息封面图片URL
+                    }
+                }, function(res) {
+                    if (res.err_msg == 'sendChatMessage:ok') {
+                        //发送成功
+                    }
+                })
+            }else{
+                var canshu = {}
+                canshu.msgtype = type;
+                canshu[type] = {
+                    mediaid: text_media_id_newsObj
+                }
+                wx.invoke('sendChatMessage',canshu, function(res) {
+                    if (res.err_msg == 'sendChatMessage:ok') {
+                        //发送成功
+                    }
+                })
+            }
+        })
+    }
 
     //是否关注
     // 使用

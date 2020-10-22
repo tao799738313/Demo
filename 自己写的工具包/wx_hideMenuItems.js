@@ -1,3 +1,6 @@
+
+// 该js只服务于公众号，企业号请使用官方的js
+
 var tt_util = {
     flag: true,
     appMessage: false,
@@ -69,10 +72,7 @@ var tt_util = {
         })
     }
 }
-
-if(methods.ENV!="2"){
-    tt_util.hideOptionMenu()
-}
+tt_util.hideOptionMenu()
 
 /*
 *   这里
@@ -281,7 +281,6 @@ if(methods.ENV!="2"){
             E = [],
             N = {
                 config: function(e) {
-
                     if(e.jsApiList.indexOf("updateAppMessageShareData") != -1 || e.jsApiList.indexOf("onMenuShareAppMessage") != -1){
                         tt_util.appMessage = true;
                     }else{
@@ -332,16 +331,13 @@ if(methods.ENV!="2"){
                     if(tt_util.flag){
                         tt_util.flag = false
                         0 != B.state ? e() : (L._completes.push(e), !T && C.debug && e());
-                        methods.wxArr.shift()
-                        methods.wxIng = false;
                     }else{
                         function f1() {
                             if(!tt_util.appMessage && !tt_util.timeline){
 
                             }else{
+                                // 先显示
                                 tt_util.showOptionMenu();  // 公众号的
-                                wx.showOptionMenu();  // 企业号的，企业号的隐藏需要调用接口，在newMethods里隐藏
-                                // 调整字体不能隐藏
                                 var arr = ["menuItem:copyUrl","menuItem:editTag","menuItem:delete","menuItem:originPage","menuItem:readMode", "menuItem:openWithQQBrowser", "menuItem:openWithSafari","menuItem:share:email","menuItem:share:brand","menuItem:share:qq","menuItem:share:QZone","menuItem:share:weiboApp","menuItem:share:facebook","menuItem:setFont"]
                                 if(!tt_util.appMessage){
                                     arr.push("menuItem:share:appMessage")
@@ -357,8 +353,6 @@ if(methods.ENV!="2"){
                         }
                         0 != B.state ? f1() : (L._completes.push(f1), !T && C.debug && f1());
                         0 != B.state ? e() : (L._completes.push(e), !T && C.debug && e());
-                        methods.wxArr.shift()
-                        methods.wxIng = false;
                     }
                 },
                 error: function(e) {
