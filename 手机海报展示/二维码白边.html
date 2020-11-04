@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		<script type="text/javascript" src="//cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+		<script type="text/javascript" src="//static.runoob.com/assets/qrcode/qrcode.min.js"></script>
+		<img src="img/首页.jpg" id="shouye" style="position: fixed;right: 99999px;">
+		<div id="qrcode" style="position: fixed;right: 99999px;"></div>
+		<canvas id="canvas"></canvas>
+		<script type="text/javascript">
+			    var qrcode = new QRCode("qrcode");
+			    var canvas = document.querySelector('#canvas');
+			    var ctx  = canvas.getContext("2d");
+				var w = $('#shouye').width(), h = $('#shouye').height()
+				canvas.width = w;
+				canvas.height = h;
+				ctx.drawImage($('#shouye')[0],0,0,w,h)
+				var url = "1231231321313"
+			    qrcode.makeCode(url);
+			var xywh = {
+				w:300,
+				h:300,
+				x:50,
+				y:50
+			}
+			                        var qrImg = $('#qrcode').find('canvas')[0]
+			                        if(qrImg){
+			                            ctx.beginPath();  // 开始画
+			                            ctx.fillStyle = "white"; //设置颜色
+			                            ctx.fillRect(xywh.x,xywh.y,xywh.w,xywh.h);//填充矩形
+			                            ctx.stroke();
+			                            ctx.drawImage(qrImg,xywh.x+xywh.w*0.05,xywh.y+xywh.h*0.05,xywh.w*0.9,xywh.h*0.9)
+			                        }
+		</script>
+	</body>
+</html>
