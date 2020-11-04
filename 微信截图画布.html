@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<style>
+			.canvas{
+				position: absolute;
+				top: 0;
+				left: 0;
+			}
+			#L .btn{
+				background-color: #262626;
+				color: white;
+				padding: 10px;
+				margin: 15px;
+				cursor: pointer;
+				position: relative;
+			}
+			#L .btn2{
+				background-color: dodgerblue;
+				text-align: center;
+				color: white;
+				padding: 10px;
+				margin: 15px;
+				cursor: pointer;
+				border-radius: 5px;
+			}
+			.btnDian{
+				position: absolute;
+				width: 10px;
+				height: 10px;
+				border-radius: 50%;
+				right: 5px;
+				bottom: 5px;
+			}
+			#tishi{
+				height: 70px;
+				line-height: 70px;
+				background-color: #c9c8c8;
+			}
+		</style>
+		<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	</head>
+	<body style="margin: 0;">
+		<div id="fixed9999_default" style="position: fixed;right: 9999px;">
+		
+		</div>
+		<div id="fixed9999" style="position: fixed;right: 9999px;">
+
+		</div>
+		<div style="display: flex;min-height: 100vh;">
+			<div id="L" style="background-color: #c9c8c8; width: 180px;">
+				 <input type="file" onchange="fileChange(this.files[0])">
+				 <div onclick="huaEWM(this)" id="huaEWM" class="btn" data-status="10" data-style="EWM">
+					  二维码位置
+					  <div class="btnDian" style="background-color: #9cd06c;"></div>
+				 </div>
+				 <div onclick="huaHEAD(this)" id="huaHEAD" class="btn" data-status="10"  data-style="HEAD">
+				 	  头像位置
+					  <div class="btnDian" style="background-color: #86d0f3;"></div>
+				 </div>
+				 <div onclick="huaIMG(this)" id="huaIMG" class="btn" data-status="10"  data-style="IMG">
+				 	  自定义图片位置
+				 					  <div class="btnDian" style="background-color: #cb69fe;"></div>
+				 </div>
+				 <div onclick="huaPHONE(this)" id="huaPHONE" class="btn" data-status="10"  data-style="PHONE">
+				 	  手机位置
+					  <div class="btnDian" style="background-color: #ff6464;"></div>
+				 </div>
+				 	 
+				 <div onclick="houtui(this)" id="houtui" class="btn2" >
+				 		后退
+				 </div>
+				 
+				 <div onclick="yulan(this)" id="yulan" class="btn2" >
+				 		预览
+				 </div>
+				 <div onclick="tijiao(this)" id="tijiao" class="btn2" >
+				 		提交
+				 </div>
+			</div>
+			<div id="flex1" style="flex: 1;text-align: center;">
+				<div id="tishi">
+					 提示区域
+				</div>
+                 <div id="flex1Box" style="display: inline-block;position: relative;">
+					 
+				 </div>
+			</div>
+			<div id="block" style="background-color: #c9c8c8; width: 450px;">
+				  <div>
+				  	 如果想在画布上预览手机号的话，初始化绘制不需要裁剪 clip, 松开鼠标后进行裁剪，裁剪方案是写上测试手机号，然后裁剪，然后恢复再画上8个圆圈
+				  </div>
+				  <br>
+				  <div>
+				  	 右边的操作区域可以选择删除某一层，删除后会导致index序号错乱，所以不做真实删除，用del = true 标记，canvas进行hidden，预览和提交同
+				  </div>
+			</div>
+		</div>
+		
+		<script type="text/javascript">
+			
+			var arr = [];
+			var status = 0;
+			var style = "";
+			var status30move = [];
+			var mouseXYWH = ""
+			var index =  0;
+			var colorObj = {
+				"EWM": '#9cd06c',
+				"HEAD": "#86d0f3",
+				"IMG": "#cb69fe",
+				"PHONE": "#ff6464"
+			}
+			function btnClick(that){
+				status = $(that).attr("data-status")
+				style = $(that).attr("data-style")
+				$('#L .btn').css('backgroundColor','#262626')
+				$('.canvas').css('z-index',0)
+				onlyDraw()
+			}
+			
+	        function isCreateCanvas(){
+				var len = arr.length
+				if(arr[len - 1].xywh && arr[len - 1].xywh.w && arr[len - 1].xywh.h){
+					// 新建
+					var canvas = createCanvas()
+					arr.push({
+						canvas
+					})
+				}else{
+					// 上一层还没画过，不新建
+				}
+			}
+			
+			function huaEWM(that){
+				if(arr.length == 0){
+					console.log("先上传底图")
+					return;
+				}
+				btnClick(that)
+				$('#huaEWM').css('backgroundColor','#9cd06c')
+				isCreateCanvas()
+			}
+			
+			function huaHEAD(that){
+				if(arr.length == 0){
+					console.log("先上传底图")
+					return;
+				}
+				btnClick(that)
+				$('#huaHEAD').css('backgroundColor','#86d0f3')
+				isCreateCanvas()
+			}
+			
+			function huaIMG(that){
+				if(arr.length == 0){
+					console.log("先上传底图")
+					return;
+				}
+				btnClick(that)
+				$('#huaIMG').css('backgroundColor','#cb69fe')
+				isCreateCanvas()
+			}
+			
+			function huaPHONE(that){
+				if(arr.length == 0){
+					console.log("先上传底图")
+					return;
+				}
+				btnClick(that)
+				$('#huaPHONE').css('backgroundColor','#ff6464')
+				isCreateCanvas()
+			}
+			
+			function houtui(that){
+				
+			}
+			
+			function yulan(that){
+				
+			}
+			
+			function tijiao(that){
+				
+			}
+			
+			function uuid(){
+				return "_" +  (+ new Date())
+			}
+			
+			function fileChange(file){
+				var fr = new FileReader()
+				fr.onload = function(res){
+					drawBG(res.target.result)
+				}
+				fr.readAsDataURL(file)
+			}
+			
+			
+			function drawBG(url){
+				var img = new Image()
+				var id = uuid()
+				img.id = id;
+				img.style.width = "500px"
+				img.onload = function(){
+					// 清空
+					chushihua()
+					
+					$('#fixed9999').append(img)
+					
+					var xywh = {
+						w: $(img).width(),
+						h: $(img).height()
+					}
+					arr.push({
+						style: "BGIMG",
+						id: id,
+						url: url,
+						xywh
+					})
+					var canvas = createCanvas("bgImg")
+					
+					canvas.ctx.drawImage(img,0,0,xywh.w,xywh.h)
+					arr[0].canvas = canvas;
+				}
+				img.src = url;
+			}
+			
+			function chushihua(){
+				arr = []
+				$('#L .btn').css('backgroundColor','#262626')
+				$('#fixed9999').html("")
+				$('#flex1Box').html("")
+				status = 0
+				style = ""
+			}
+			
+
+			
+			function createCanvas(className){
+				
+		        var xywh = arr[0].xywh
+				if(!xywh){
+					console.log("请先上传底图")
+					return;
+				}
+				var canvas = document.createElement('canvas');
+				var id = uuid()
+				canvas.id = id;
+				canvas.width = xywh.w
+				canvas.height = xywh.h
+				canvas.className = className || "canvas";
+				$('#flex1Box').append(canvas);
+				
+
+				
+				
+				canvas.addEventListener('mousedown',function(){
+					mousedown()
+				})
+				
+				canvas.addEventListener('mousemove',function(){
+					mousemove()
+				})
+				
+				canvas.addEventListener('mouseup',function(){
+					mouseup()
+				})
+				
+				canvas.addEventListener('mouseleave',function(){
+					// 离开就和松开一样
+					mouseup()
+				})
+				
+				var ctx = canvas.getContext('2d')
+				return {
+					id: id,
+					dom: canvas,
+					ctx: ctx
+				}
+			}
+			
+			
+			function mousedown(){
+				// 10就是可以画画
+				if(status == 10 && mouseXYWH == "" && style != ""){
+					mouseXYWH = {
+						s_x: event.layerX,
+						s_y: event.layerY
+					}
+					tishi({
+						x: event.layerX,
+						y: event.layerY
+					})
+				}
+				// 20是一个可以点击的状态，当鼠标位于某个图的边缘时，状态自动变成20
+				if(status == 20){
+					// 点击后变成30
+					status = 30
+					$('.canvas').css('z-index',0)
+					$('.canvas').eq(index[0] - 1).css('z-index',200)
+					move30(event)
+					return;
+				}
+				// 30状态就是有8个圆圈，鼠标有各种图标的状态
+                // 在30的状态下再次点击，status30move的状态有move事件控制
+                if(status == 30){
+					// 点击在空白的位置恢复成10
+					if(status30move.length == 0){
+						status = 10
+						$('.canvas').css('z-index',0)
+						onlyDraw()
+					}
+					// 如果是处于可操作的状态下，锁定状态true
+					if(status30move.length == 1){
+						status30move.push(true)
+						status30move.push({
+							s_x: event.layerX,
+							s_y: event.layerY,
+							yuanX: arr[index[0]].xywh.x,
+							yuanY: arr[index[0]].xywh.y,
+							yuanW: arr[index[0]].xywh.w,
+							yuanH: arr[index[0]].xywh.h,
+						})
+						tishi(arr[index[0]].xywh)
+					}
+                }
+
+				event.stopPropagation()
+			}
+			
+			
+			
+			function mousemove(){
+				// 画画的过程
+				if(status == 10 && mouseXYWH != ""){
+					mouseXYWH.e_x = event.layerX;
+					mouseXYWH.e_y = event.layerY;
+					var len = arr.length;
+					var canvas = arr[len-1].canvas;
+					canvas.ctx.clearRect(0,0,canvas.dom.width,canvas.dom.height);
+					var xywh = count(mouseXYWH)
+
+					canvas.ctx.beginPath();
+                    canvas.ctx.fillStyle = colorObj[style]
+					canvas.ctx.rect(xywh.x,xywh.y,xywh.w,xywh.h);
+					canvas.ctx.fill()
+					canvas.ctx.stroke()
+					
+                    canvas.ctx.closePath();
+					tishi(xywh)
+				}
+				
+				// 移动中找可操作层
+				if((status == 10 || status == 20) && mouseXYWH == "" ){
+					// 寻找最上层的可操作层
+					index = maxIndex(event)
+					if(index.length != 0){
+						$('body').css('cursor','grab')
+						status = 20
+					}else{
+						$('body').css('cursor','auto')
+						status = 10
+					}
+				}
+				// 进行拖动和修改大小的操作
+				if(status == 30){
+					if(status30move.length < 2){
+						move30(event)
+					}
+					if(status30move.length >= 2){
+						// 判断8个点和一个move的处理方案
+						if(status30move[0] == "move"){
+							var yidongX = event.layerX - status30move[2].s_x
+							var yidongY = event.layerY - status30move[2].s_y
+							arr[index[0]].xywh.x = status30move[2].yuanX + yidongX
+							arr[index[0]].xywh.y = status30move[2].yuanY + yidongY
+						}
+						if(status30move[0] == "1"){
+							var yidongX = event.layerX - status30move[2].s_x
+							var yidongY = event.layerY - status30move[2].s_y
+							arr[index[0]].xywh.x = status30move[2].yuanX + yidongX
+							arr[index[0]].xywh.y = status30move[2].yuanY + yidongY
+							arr[index[0]].xywh.w = status30move[2].yuanW - yidongX
+							arr[index[0]].xywh.h = status30move[2].yuanH - yidongY
+						}
+						if(status30move[0] == "2"){
+							var yidongX = event.layerX - status30move[2].s_x
+							var yidongY = event.layerY - status30move[2].s_y
+							arr[index[0]].xywh.y = status30move[2].yuanY + yidongY
+							arr[index[0]].xywh.h = status30move[2].yuanH - yidongY
+						}
+						if(status30move[0] == "3"){
+							var yidongX = event.layerX - status30move[2].s_x
+							var yidongY = event.layerY - status30move[2].s_y
+							arr[index[0]].xywh.y = status30move[2].yuanY + yidongY
+							arr[index[0]].xywh.w = status30move[2].yuanW + yidongX
+							arr[index[0]].xywh.h = status30move[2].yuanH - yidongY
+						}
+						if(status30move[0] == "4"){
+							var yidongX = event.layerX - status30move[2].s_x
+							var yidongY = event.layerY - status30move[2].s_y
+							arr[index[0]].xywh.x = status30move[2].yuanX + yidongX
+							arr[index[0]].xywh.w = status30move[2].yuanW - yidongX
+						}
+						if(status30move[0] == "5"){
+							var yidongX = event.layerX - status30move[2].s_x
+							var yidongY = event.layerY - status30move[2].s_y
+							arr[index[0]].xywh.w = status30move[2].yuanW + yidongX
+						}
+						if(status30move[0] == "6"){
+							var yidongX = event.layerX - status30move[2].s_x
+							var yidongY = event.layerY - status30move[2].s_y
+							arr[index[0]].xywh.x = status30move[2].yuanX + yidongX
+							arr[index[0]].xywh.w = status30move[2].yuanW - yidongX
+							arr[index[0]].xywh.h = status30move[2].yuanH + yidongY
+						}
+						if(status30move[0] == "7"){
+							var yidongX = event.layerX - status30move[2].s_x
+							var yidongY = event.layerY - status30move[2].s_y
+							arr[index[0]].xywh.h = status30move[2].yuanH + yidongY
+						}
+						if(status30move[0] == "8"){
+							var yidongX = event.layerX - status30move[2].s_x
+							var yidongY = event.layerY - status30move[2].s_y
+							arr[index[0]].xywh.w = status30move[2].yuanW + yidongX
+							arr[index[0]].xywh.h = status30move[2].yuanH + yidongY
+						}
+						onlyDraw(index[0],true)
+						tishi(arr[index[0]].xywh)
+					}
+				}
+				event.stopPropagation()
+			}
+			
+			function tishi(xywh){
+				if(xywh){
+					if(xywh.w < 0){
+						xywh.x = xywh.x + xywh.w
+						xywh.w = Math.abs(xywh.w)
+					}
+					if(xywh.h < 0){
+						xywh.y = xywh.y + xywh.h
+						xywh.h = Math.abs(xywh.h)
+					}
+					$('#tishi').html(JSON.stringify(xywh))
+				}else{
+					$('#tishi').html("提示区域")
+				}
+			}
+			
+			
+			function mouseup(){
+				// 松开结束画画过程
+				if(status == 10 && mouseXYWH){
+					var xywh = count(mouseXYWH)
+					if(xywh.w && xywh.h && xywh.w >= 15 && xywh.h >= 15){
+						arr[arr.length-1].style = style
+						arr[arr.length-1].xywh = xywh
+						// 新建
+						isCreateCanvas()
+					}else{
+						var canvas = arr[arr.length-1].canvas
+						canvas.ctx.clearRect(0,0,canvas.dom.width,canvas.dom.height)
+					}
+					mouseXYWH = ""
+					maxIndex(event)
+				}
+				// 结束拖动和改成大小的过程
+				if(status == 30 && status30move.length >= 2){
+					// 可能会有反方向的问题，重新计算xywh
+					move30count(index[0])
+					status30move = []
+					move30(event)
+				}
+				tishi()
+				event.stopPropagation()
+			}
+			
+			function move30(e){
+				var obj = arr[index[0]]
+				var canvas = obj.canvas
+				var xywh = obj.xywh;
+				if(xywh){
+					canvas.ctx.clearRect(0,0,canvas.dom.width,canvas.dom.height);
+					
+					canvas.ctx.beginPath();
+					canvas.ctx.rect(xywh.x,xywh.y,xywh.w,xywh.h);
+					canvas.ctx.fillStyle = colorObj[obj.style];
+					canvas.ctx.fill();
+					canvas.ctx.stroke();
+					canvas.ctx.closePath();
+					var flag = false
+					
+					// 圆一
+					canvas.ctx.beginPath();
+					canvas.ctx.arc(xywh.x,xywh.y, 4, 0, Math.PI*2, false); // 绘制圆圈轨迹,最后一个参数是从上半圆还是下半圆
+					canvas.ctx.stroke();
+					if(canvas.ctx.isPointInPath(e.layerX,e.layerY)){
+                        flag = true;
+						status30move = [1]
+						$('body').css('cursor','nw-resize')
+					}
+					canvas.ctx.closePath();
+					
+					// 圆二
+					canvas.ctx.beginPath();
+					canvas.ctx.arc(xywh.x + xywh.w / 2,xywh.y, 4, 0, Math.PI*2, false); // 绘制圆圈轨迹,最后一个参数是从上半圆还是下半圆
+					canvas.ctx.stroke();
+					if(canvas.ctx.isPointInPath(e.layerX,e.layerY)){
+                        flag = true;
+						status30move = [2]
+						$('body').css('cursor','n-resize')
+					}
+					canvas.ctx.closePath();
+					
+					// 圆三
+					canvas.ctx.beginPath();
+					canvas.ctx.arc(xywh.x + xywh.w,xywh.y, 4, 0, Math.PI*2, false); // 绘制圆圈轨迹,最后一个参数是从上半圆还是下半圆
+					canvas.ctx.stroke();
+					if(canvas.ctx.isPointInPath(e.layerX,e.layerY)){
+                        status30move = [3]
+						flag = true;
+						$('body').css('cursor','ne-resize')
+					}
+					canvas.ctx.closePath();
+					
+					
+					// 圆四
+					canvas.ctx.beginPath();
+					canvas.ctx.arc(xywh.x,xywh.y + xywh.h / 2, 4, 0, Math.PI*2, false); // 绘制圆圈轨迹,最后一个参数是从上半圆还是下半圆
+					canvas.ctx.stroke();
+					if(canvas.ctx.isPointInPath(e.layerX,e.layerY)){
+					   status30move = [4]
+					   flag = true;
+						$('body').css('cursor','e-resize')
+					}
+					canvas.ctx.closePath();
+					
+					
+					// 圆五
+					canvas.ctx.beginPath();
+					canvas.ctx.arc(xywh.x + xywh.w,xywh.y + xywh.h / 2, 4, 0, Math.PI*2, false); // 绘制圆圈轨迹,最后一个参数是从上半圆还是下半圆
+					canvas.ctx.stroke();
+					if(canvas.ctx.isPointInPath(e.layerX,e.layerY)){
+					    status30move = [5]
+						flag = true;
+						$('body').css('cursor','e-resize')
+					}
+					canvas.ctx.closePath();
+					
+					
+					// 圆六
+					canvas.ctx.beginPath();
+					canvas.ctx.arc(xywh.x,xywh.y + xywh.h, 4, 0, Math.PI*2, false); // 绘制圆圈轨迹,最后一个参数是从上半圆还是下半圆
+					canvas.ctx.stroke();
+					if(canvas.ctx.isPointInPath(e.layerX,e.layerY)){
+					    status30move = [6]
+						flag = true;
+						$('body').css('cursor','ne-resize')
+					}
+					canvas.ctx.closePath();
+					
+					
+					// 圆七
+					canvas.ctx.beginPath();
+					canvas.ctx.arc(xywh.x + xywh.w / 2,xywh.y + xywh.h, 4, 0, Math.PI*2, false); // 绘制圆圈轨迹,最后一个参数是从上半圆还是下半圆
+					canvas.ctx.stroke();
+					if(canvas.ctx.isPointInPath(e.layerX,e.layerY)){
+					    status30move = [7]
+						flag = true;
+						$('body').css('cursor','n-resize')
+					}
+					canvas.ctx.closePath();
+					
+					
+					// 圆八
+					canvas.ctx.beginPath();
+					canvas.ctx.arc(xywh.x + xywh.w,xywh.y + xywh.h, 4, 0, Math.PI*2, false); // 绘制圆圈轨迹,最后一个参数是从上半圆还是下半圆
+					canvas.ctx.stroke();
+					if(canvas.ctx.isPointInPath(e.layerX,e.layerY)){
+					    status30move = [8]
+						flag = true;
+						$('body').css('cursor','nw-resize')
+					}
+					canvas.ctx.closePath();
+					
+					// 模仿阻止冒泡
+					if(flag){
+						return;
+					}
+					
+
+					// 上边
+					canvas.ctx.beginPath();
+					canvas.ctx.rect(xywh.x,xywh.y - 2,xywh.w + 4, 4);
+					if(canvas.ctx.isPointInPath(e.layerX,e.layerY)){
+						$('body').css('cursor','move')
+						status30move = ["move"]
+						return;
+					}
+					canvas.ctx.closePath();
+					
+					// 右
+					canvas.ctx.beginPath();
+					canvas.ctx.rect(xywh.x + xywh.w - 2,xywh.y, 4 ,xywh.h);
+					if(canvas.ctx.isPointInPath(e.layerX,e.layerY)){
+						$('body').css('cursor','move')
+						status30move = ["move"]
+						return;
+					}
+					canvas.ctx.closePath();
+					
+					// 下
+					canvas.ctx.beginPath();
+					canvas.ctx.rect(xywh.x,xywh.y + xywh.h - 2,xywh.w,4);
+					if(canvas.ctx.isPointInPath(e.layerX,e.layerY)){
+						$('body').css('cursor','move')
+						status30move = ["move"]
+						return;
+					}
+					canvas.ctx.closePath();
+					
+					// 左
+					canvas.ctx.beginPath();
+					canvas.ctx.rect(xywh.x - 2,xywh.y, 4,xywh.h);
+					if(canvas.ctx.isPointInPath(e.layerX,e.layerY)){
+						$('body').css('cursor','move')
+						status30move = ["move"]
+						return;
+					}
+					canvas.ctx.closePath();
+					
+
+					$('body').css('cursor','auto')
+					status30move = []
+                    
+				}
+			}
+
+			
+			function count(obj){
+				var x,y,x2,y2;
+				obj.s_x = Math.abs( obj.s_x )
+				obj.s_y = Math.abs( obj.s_y )
+				obj.e_x = Math.abs( obj.e_x )
+				obj.e_y = Math.abs( obj.e_y )
+				if(obj.s_x > obj.e_x){
+					x = obj.e_x
+					x2 = obj.s_x
+				}else{
+					x = obj.s_x
+					x2 = obj.e_x
+				}
+				if(obj.s_y > obj.e_y){
+					y = obj.e_y
+					y2 = obj.s_y
+				}else{
+					y = obj.s_y
+					y2 = obj.e_y
+				}
+				return {
+					x: x,
+					y: y,
+					w: x2-x,
+					h: y2-y
+				}
+			}
+			
+			function move30count(index){
+				var xywh = arr[index].xywh
+				if(xywh.w < 0){
+					xywh.x = xywh.x + xywh.w
+					xywh.w = Math.abs(xywh.w)
+				}
+				if(xywh.h < 0){
+					xywh.y = xywh.y + xywh.h
+					xywh.h = Math.abs(xywh.h)
+				}
+				arr[index].xywh = xywh
+			}
+			
+			
+			
+			function onlyDraw(index,isARC){
+				if(index){
+					var obj = arr[index];
+					var canvas = obj.canvas;
+					var xywh = obj.xywh;
+					if(xywh){
+						canvas.ctx.clearRect(0,0,canvas.dom.width,canvas.dom.height);
+						
+						canvas.ctx.beginPath();
+						canvas.ctx.rect(xywh.x,xywh.y,xywh.w,xywh.h);
+						canvas.ctx.fillStyle = colorObj[obj.style];
+						canvas.ctx.fill();
+						canvas.ctx.stroke();
+						canvas.ctx.closePath();
+						
+						if(isARC){
+							// 圆一
+							canvas.ctx.beginPath();
+							canvas.ctx.arc(xywh.x,xywh.y, 4, 0, Math.PI*2, false); // 绘制圆圈轨迹,最后一个参数是从上半圆还是下半圆
+							canvas.ctx.stroke();
+							canvas.ctx.closePath();
+							
+							// 圆二
+							canvas.ctx.beginPath();
+							canvas.ctx.arc(xywh.x + xywh.w / 2,xywh.y, 4, 0, Math.PI*2, false); // 绘制圆圈轨迹,最后一个参数是从上半圆还是下半圆
+							canvas.ctx.stroke();
+							canvas.ctx.closePath();
+							
+							// 圆三
+							canvas.ctx.beginPath();
+							canvas.ctx.arc(xywh.x + xywh.w,xywh.y, 4, 0, Math.PI*2, false); // 绘制圆圈轨迹,最后一个参数是从上半圆还是下半圆
+							canvas.ctx.stroke();
+							canvas.ctx.closePath();
+							
+							
+							// 圆四
+							canvas.ctx.beginPath();
+							canvas.ctx.arc(xywh.x,xywh.y + xywh.h / 2, 4, 0, Math.PI*2, false); // 绘制圆圈轨迹,最后一个参数是从上半圆还是下半圆
+							canvas.ctx.stroke();
+							canvas.ctx.closePath();
+							
+							
+							// 圆五
+							canvas.ctx.beginPath();
+							canvas.ctx.arc(xywh.x + xywh.w,xywh.y + xywh.h / 2, 4, 0, Math.PI*2, false); // 绘制圆圈轨迹,最后一个参数是从上半圆还是下半圆
+							canvas.ctx.stroke();
+							canvas.ctx.closePath();
+							
+							
+							// 圆六
+							canvas.ctx.beginPath();
+							canvas.ctx.arc(xywh.x,xywh.y + xywh.h, 4, 0, Math.PI*2, false); // 绘制圆圈轨迹,最后一个参数是从上半圆还是下半圆
+							canvas.ctx.stroke();
+							canvas.ctx.closePath();
+							
+							
+							// 圆七
+							canvas.ctx.beginPath();
+							canvas.ctx.arc(xywh.x + xywh.w / 2,xywh.y + xywh.h, 4, 0, Math.PI*2, false); // 绘制圆圈轨迹,最后一个参数是从上半圆还是下半圆
+							canvas.ctx.stroke();
+							canvas.ctx.closePath();
+							
+							
+							// 圆八
+							canvas.ctx.beginPath();
+							canvas.ctx.arc(xywh.x + xywh.w,xywh.y + xywh.h, 4, 0, Math.PI*2, false); // 绘制圆圈轨迹,最后一个参数是从上半圆还是下半圆
+							canvas.ctx.stroke();
+							canvas.ctx.closePath();
+						}
+					}
+				}else{
+					for(let i = 1;i<=arr.length - 1;i++){
+							var obj = arr[i];
+							var canvas = obj.canvas;
+							var xywh = obj.xywh;
+							if(xywh){
+								canvas.ctx.clearRect(0,0,canvas.dom.width,canvas.dom.height);
+								
+								canvas.ctx.beginPath();
+								canvas.ctx.rect(xywh.x,xywh.y,xywh.w,xywh.h);
+								canvas.ctx.fillStyle = colorObj[obj.style];
+								canvas.ctx.fill();
+								canvas.ctx.stroke();
+								canvas.ctx.closePath();
+							}
+					}
+				}
+			}
+			
+			function maxIndex(e){
+				var index = []
+				for(let i = arr.length - 1;i>=1;i--){
+	
+						var obj = arr[i];
+						var canvas = obj.canvas;
+						var xywh = obj.xywh;
+						if(xywh){
+							canvas.ctx.clearRect(0,0,canvas.dom.width,canvas.dom.height);
+							
+							canvas.ctx.beginPath();
+							canvas.ctx.rect(xywh.x,xywh.y,xywh.w,xywh.h);
+							canvas.ctx.fillStyle = colorObj[obj.style];
+							canvas.ctx.fill();
+							canvas.ctx.stroke();
+							if(canvas.ctx.isPointInPath(e.layerX,e.layerY)){
+
+								// 上边
+								canvas.ctx.beginPath();
+								canvas.ctx.rect(xywh.x,xywh.y - 2,xywh.w,4);
+								if(canvas.ctx.isPointInPath(e.layerX,e.layerY)){
+									index = [i,"上"]
+									return index;
+								}
+								canvas.ctx.closePath();
+								
+								// 右
+								canvas.ctx.beginPath();
+								canvas.ctx.rect(xywh.x + xywh.w - 2,xywh.y,4,xywh.h);
+								if(canvas.ctx.isPointInPath(e.layerX,e.layerY)){
+									index = [i,"右"]
+									return index;
+								}
+								canvas.ctx.closePath();
+								
+								// 下
+								canvas.ctx.beginPath();
+								canvas.ctx.rect(xywh.x,xywh.y + xywh.h - 2,xywh.w,4);
+								if(canvas.ctx.isPointInPath(e.layerX,e.layerY)){
+									index = [i,"下"]
+									return index;
+								}
+								canvas.ctx.closePath();
+								
+								// 左
+								canvas.ctx.beginPath();
+								canvas.ctx.rect(xywh.x - 2,xywh.y,4,xywh.h);
+								if(canvas.ctx.isPointInPath(e.layerX,e.layerY)){
+									index = [i,"左"]
+									return index;
+								}
+								canvas.ctx.closePath();
+								
+								break;
+							}
+							
+							canvas.ctx.closePath();
+							
+						}
+				}
+				return index;
+				
+			}
+		</script>
+	</body>
+</html>
