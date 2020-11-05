@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<style type="text/css">
+			#box {
+				position: relative;
+				width: 800px;
+				height: 600px;
+				border: 1px solid black;
+			}
+
+			.food {
+				position: absolute;
+				width: 10px;
+				height: 10px;
+				z-index: 99;
+				box-sizing: border-box;
+				border: 1px solid black;
+
+			}
+
+			#score {
+				color: red;
+			}
+
+			.snackHead {
+				position: absolute;
+				width: 10px;
+				height: 10px;
+				background-color: red;
+			}
+
+			#tishi {
+				font-size: 18px;
+			}
+
+			.snackbody {
+				position: absolute;
+				width: 10px;
+				height: 10px;
+				background-color: grey;
+			}
+		</style>
+	</head>
+	<body>
+
+		<div>提示:<span id="tishi">游戏进行中</span></div>
+		<div>分数:<span id="score">0</span>分</div>
+		<div id="box"></div>
+		<script type="text/javascript">
+			var food, snake, score = 0;
+
+			function Food() {
+				var that = this;
+				var color = ['grey', 'yellow', 'blue', 'red'];
+				this.food = '';
+				this.score = 0;
+				this.x = 0;
+				this.y = 0;
+				this.draw = function() {
+					var dom = document.createElement('div');
+					dom.className = 'food';
+					var x = parseInt(Math.random() * 790);
+					var y = parseInt(Math.random() * 590);
+					var score2 = parseInt(Math.random() * 3);
+					dom.style.top = y + 'px';
+					dom.style.left = x + 'px';
+					dom.style.backgroundColor = color[score2];
+					that.x = x;
+					that.y = y;
+					that.score = score2 + 1;
+					document.querySelector('#box').appendChild(dom);
+					that.food = dom;
+				}
+				this.beEat = function() {
+					that.food.remove();
+				}
+			}
+
+			function Snake(food) {
+				var that = this;
+				var initX = 0;
+				var initY = 300;
+				this.nowX = 0;
+				this.nowY = 300;
+				this.toward = 'left';
+				this.snake = '';
+				this.body = [];
+				this.draw = function() {
+					var dom = document.createElement('div');
+					dom.className = 'snackHead';
+					dom.style.top = initY + 'px';
+					dom.style.left = initX + 'px';
+					document.querySelector('#box').appendChild(dom);
+					that.snake = dom;
+                      that.body.push(dom)
+				}
+				this.run = function(time) {
+					var time = setInterval(function() {
+						if (that.body.length > 1) {
+							that.body.forEach(function(dom, y) {
+								if (y == that.body.length-1) {
+
+								} else {
+									var dom1 = that.body[y+1];
+									dom.style.top = dom1.style.top.split('px')[0] + 'px';
+									dom.style.left = dom1.style.left.split('px')[0] + 'px';
+								}
+							})
+						}
+						var toward = that.toward;
+						var bodyObj = {
+							toward: toward,
+							thatX: that.nowX,
+							thatY: that.nowY,
+							time
+						};
+						if (toward == 'left') {
+							that.nowX += 1;
+							that.snake.style.left = that.nowX + 'px';
+						} else if (toward == 'right') {
+							that.nowX -= 1;
+							that.snake.style.left = that.nowX + 'px';
+						} else if (toward == 'up') {
+							that.nowY -= 1;
+							that.snake.style.top = that.nowY + 'px';
+						} else if (toward == 'down') {
+							that.nowY += 1;
+							that.snake.style.top = that.nowY + 'px';
+						}
+						if (that.nowX < 0 || that.nowX > 790) {
+							clearInterval(time);
+							document.querySelector('#tishi').innerHTML = '游戏结束了'
+						}
+						if (that.nowY < 0 || that.nowY > 590) {
+							clearInterval(time);
+							document.querySelector('#tishi').innerHTML = '游戏结束了'
+						}
+
+						if (Math.abs(that.nowX - food.x) < 5 && Math.abs(that.nowY - food.y) < 5) {
+							food.beEat();
+							that.long();
+							var A = document.querySelector('#score');
+							score += food.score;
+							A.innerHTML = score;
+							food.draw();
+						}
+
+					}, time)
+				}
+				this.long = function() {
+					var dom = document.createElement('div');
+					dom.className = 'snackbody';
+					var toward = that.toward;
+					var x, y;
+					if (toward == 'left') {
+						x = that.nowX - 10;
+						y = that.nowY;
+					} else if (toward == 'right') {
+						x = that.nowX + 10;
+						y = that.nowY;
+					} else if (toward == 'up') {
+						x = that.nowX;
+						y = that.nowY - 10;
+					} else if (toward == 'down') {
+						x = that.nowX;
+						y = that.nowY + 10;
+					}
+					dom.style.top = y + 'px';
+					dom.style.left = x + 'px';
+					document.querySelector('#box').appendChild(dom);
+					that.body.unshift(dom);
+				}
+
+			}
+
+			function init() {
+				food = new Food();
+				food.draw()
+				snake = new Snake(food);
+				snake.draw()
+				snake.run(8)
+			}
+			init()
+			window.onkeydown = function(e) {
+				
+				if (e.keyCode == 38) {
+					if(snake.toward == 'down'){
+					console.log('不能反方向移动')	
+					}else{
+					snake.toward = 'up';
+					}
+				}
+				if (e.keyCode == 40) {
+					if(snake.toward == 'up'){
+					console.log('不能反方向移动')	
+					}else{
+					snake.toward = 'down';
+					}
+				}
+				if (e.keyCode == 37) {
+					if(snake.toward == 'left'){
+					console.log('不能反方向移动')	
+					}else{
+					snake.toward = 'right';
+					}
+				}
+				if (e.keyCode == 39) {
+					if(snake.toward == 'right'){
+					console.log('不能反方向移动')	
+					}else{
+					snake.toward = 'left';
+					}
+				}
+				
+			}
+		</script>
+	</body>
+</html>
