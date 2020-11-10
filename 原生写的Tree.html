@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		<div id="tree"></div>
+		<hr>
+		<div onclick="getChecked()">点击获取选中的obj</div>
+		<script type="text/javascript">
+			function mimeTree(domId,option){
+			
+				var that = this;
+				this.cache = {};
+				this.tree = JSON.parse(JSON.stringify(option.tree));
+				this.direction = "";
+				this.init = function(cb){
+					var gui = that.gui();
+					that.cache[gui] = {
+						child:that.tree
+					};
+					document.querySelector('#'+domId).innerHTML = `<div id="fa_${gui}"><input id="check_${gui}" type="checkbox" style="display:none;"></div>`
+					that.drawArr(that.tree,gui);
+					that.default(option.default)
+					cb(that)
+				},
+				this.drawArr = function(arr,faId,comePush){
+					if(comePush){
+						var oldIdArr = []
+					}
+					arr.forEach(function(obj,index){
+						if(comePush){
+							that.cache[faId].child.push(obj)
+							oldIdArr.push(obj.id);
+						}
+					    that.drawOne(obj,faId,index)  	
+					})
+					if(comePush){
+						return oldIdArr
+					}
+				}
+				this.drawOne= function(obj,faId,index){
+					var gui = that.gui()
+					obj.faId = faId;
+					that.cache[gui] = obj;
+                    if(that.cache[faId]){
+						that.cache[faId].child[index]["_id"] = gui;
+						var _index = that.cache[faId]['_index'];
+						if(_index===""||_index===undefined||_index===null){
+							that.cache[faId].child[index]["_index"] = 0;
+						}else{
+							that.cache[faId].child[index]["_index"] = (_index+1);
+						}
+					}
+					var dom = document.createElement('div')
+					dom.innerHTML = `<div id="box_${gui}"></div><div id="fa_${gui}" style="margin-left:25px;display:none;"></div>`
+					document.querySelector('#fa_'+faId).appendChild(dom)
+					that.drawCheckbox(obj,gui,faId)
+					that.drawOpen(obj,gui)
+					that.drawClick(obj,gui)
+					that.drawOldId(obj,gui)
+					if(obj.child){
+						that.drawArr(obj.child,gui)
+					}
+				}
+				this.drawCheckbox= function(obj,gui,faId){
+					var dom = document.createElement('input')
+					dom.setAttribute('type','checkbox')
+					dom.name = "treeCheck"
+					dom.id = "check_" + gui;
+					dom.className = 'faId_' + faId;
+					document.querySelector('#box_'+gui).appendChild(dom)
+					dom.addEventListener('click',function(){
+						var isChecked = this.checked;
+						var childs = that.cache[gui].child;
+						var brotherLen =  that.cache[faId].child.length;
+						var alreadyCheck = 0;
+						Array.prototype.slice.call(document.querySelectorAll('.faId_'+faId)).forEach(function(x){
+							if(x.checked){
+								alreadyCheck++
+							}
+						})
+						
+						<!-- 向下传递 -->	
+						if(that.direction=="down"){
+							childs.forEach(function(x){
+								if(document.querySelector('#check_'+x._id).checked==isChecked){
+									
+								}else{
+									document.querySelector('#check_'+x._id).click()
+								}
+							})
+						}
+						<!-- 向上传递 -->
+						if(that.direction=="up"){
+							if(brotherLen==alreadyCheck){
+								if(document.querySelector('#check_'+faId).checked){
+									
+								}else{
+									document.querySelector('#check_'+faId).click()
+								}
+							}else{
+								if(document.querySelector('#check_'+faId).checked){
+									document.querySelector('#check_'+faId).click()
+								}
+							}
+						}
+
+						if(that.direction==""){
+							<!-- 向下传递 -->
+							childs.forEach(function(x){
+								if(document.querySelector('#check_'+x._id).checked==isChecked){
+									
+								}else{
+									that.direction = 'down'
+									document.querySelector('#check_'+x._id).click()
+								}
+							})
+							<!-- 向上传递 -->
+                            if(brotherLen==alreadyCheck){
+								that.direction = 'up'
+                            	if(document.querySelector('#check_'+faId).checked){
+                            		
+                            	}else{
+                            		document.querySelector('#check_'+faId).click()
+                            	}
+                            }else{
+								that.direction = 'up'
+                            	if(document.querySelector('#check_'+faId).checked){
+                            		document.querySelector('#check_'+faId).click()
+                            	}
+                            }
+							
+							<!-- direction恢复 -->
+							that.direction="";
+							option.check(that.cache[gui],gui,that)
+						}
+					})
+				}
+				this.drawOpen= function(obj,gui){
+					var dom = document.createElement('span')
+					dom.id = "open_" + gui;
+					dom.innerHTML = "+"
+					document.querySelector('#box_'+gui).appendChild(dom)
+					dom.addEventListener('click',function(){
+						if(document.querySelector('#fa_'+gui).style.display=="none"){
+							document.querySelector('#fa_'+gui).style.display="block";
+							this.innerHTML = "-"
+						}else{
+							document.querySelector('#fa_'+gui).style.display="none";
+							this.innerHTML = "+"
+						}
+						option.open(that.cache[gui],gui,that)
+					})
+				}
+				this.drawClick= function(obj,gui){
+					var dom = document.createElement('span')
+					dom.setAttribute('type','checkbox')
+					dom.id = "click_" + gui;
+					dom.innerHTML = obj.name
+					document.querySelector('#box_'+gui).appendChild(dom)
+					dom.addEventListener('click',function(){
+						option.click(that.cache[gui],gui,that)
+					})
+				}
+				this.drawOldId = function(obj,gui){
+					var dom = document.createElement('span')
+					dom.style.cssText="display:none";
+					dom.id = "oldId_" + obj.id;
+					dom.setAttribute('data-gui',gui)
+					document.querySelector('#box_'+gui).appendChild(dom)				
+				}
+				this.gui = function(){
+					var S4 = function() {
+					    return(((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+					};
+					return(S4() + S4() + S4() + S4() + S4() + S4() + S4() + S4());
+				}
+				this.push = function(id,arr){
+					<!-- that.cache[id].child = arr -->
+					var oldIdArr = that.drawArr(arr,id,1);
+					if(document.querySelector('#check_'+id).checked){
+						that.default(oldIdArr)
+					}
+				}
+				this.default = function(arr){
+					arr.forEach(function(x){
+						if(document.querySelector('#oldId_'+x)){
+							var gui = document.querySelector('#oldId_'+x).getAttribute('data-gui')
+							document.querySelector('#check_'+gui).click()
+						}
+					})
+				}
+				this.getCheck =function(){
+					var arr = [];
+				    Array.prototype.slice.call(document.querySelectorAll('[name=treeCheck]:checked')).forEach(function(x){
+						var _id = x.getAttribute('id').split('_')[1]
+						arr.push(that.cache[_id])
+					})
+					return arr;
+				}
+			}
+		</script>
+		<script type="text/javascript">
+			var arr = [{
+					name:"一级A",
+					id:"1A",
+					child:[{
+					name:"二级AA",
+					id:"2AA",
+					child:[]
+				},{
+					name:"二级AB",
+					id:"2AB",
+					child:[]
+				},{
+					name:"二级AC",
+					id:"2AC",
+					child:[{
+					name:"三级ACA",
+					id:"3ACA",
+					child:[]
+				},{
+					name:"三级ACB",
+					id:"3ACB",
+					child:[]
+				},{
+					name:"三级ACC",
+					id:"2ACC",
+					child:[{
+					name:"四级ACCA",
+					id:"4ACCA",
+					child:[]
+				},{
+					name:"四级ACCB",
+					id:"4ACCB",
+					child:[]
+				}]
+				}]
+				}]
+				},{
+					name:"一级B",
+					id:"1B",
+					child:[{
+					name:"二级BA",
+					id:"2BA",
+					child:[]
+				},{
+					name:"二级BB",
+					id:"2BB",
+					child:[]
+				},{
+					name:"二级BC",
+					id:"2BC",
+					child:[]
+				}]
+				},{
+					name:"一级C",
+					id:"1C",
+					child:[{
+					name:"二级CA",
+					id:"2CA",
+					child:[]
+				},{
+					name:"二级CB",
+					id:"2CB",
+					child:[]
+				},{
+					name:"二级CC",
+					id:"2CC",
+					child:[]
+				}]
+				}] 
+			var A =	null;
+			var flag = 1;
+			   new mimeTree('tree',{
+				   tree: arr,
+				   check:function(obj,id,tree){
+					   console.log(obj,id,tree)
+				   },
+				   open:function(obj,id,tree){
+					   console.log(obj,id,tree)
+				   },
+				   click:function(obj,id,tree){
+					   console.log(obj,id,tree)
+					   if(flag==1){
+						   flag++;
+						   tree.push(id,[{
+								name:"测试a",
+								id:"a",
+								child:[{
+									name:"测试a1",
+									id:"a1",
+									child:[]
+									},{
+										name:"测试a2",
+										id:"a2",
+										child:[]
+									},
+							]},{
+								name:"测试b",
+								id:"b",
+								child:[]
+							}
+					      ])
+					   }  
+				   },
+				   default:['2AA','2AC']   //默认值	
+			   }).init(function(tree){
+				   A = tree;
+			   })
+		function getChecked(){
+			console.log(A.getCheck())
+		}	   
+		</script>
+	</body>
+</html>
