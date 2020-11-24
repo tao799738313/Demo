@@ -1,0 +1,101 @@
+#tree{
+   position: fixed;
+   background-color: #f0f0f0;
+    top: 0;
+    left: 0;
+    z-index: 5;
+    display: none;
+    font-size: 16px;
+    overflow: hidden;
+}
+.okbtn{
+    margin: 15px 25px;
+    background-color: dodgerblue;
+    color: white;
+    text-align: center;
+    padding: 0.4rem;
+    border-radius: 0.9rem;
+    font-size: 0.65rem;
+}
+[name="treeCheck"]{
+    display: none;
+}
+[name="treeCheck"]~label{
+   position: relative;
+   padding-left: 23px;
+}
+[name="treeCheck"]~label:before{
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    left: 0;
+    background-color: white;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 1px solid;
+}
+[name="treeCheck"]:checked~label:before{
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    left: 0;
+    background-color: white;
+    background: url("../imgs/打钩.png") no-repeat;
+    background-size: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 1px solid;
+}
+.tree_box{
+    display: flex;
+    align-items: center;
+    padding: 5px;
+}
+.openSpan{
+    margin-right: 5px;
+    width: 18px;
+    height: 18px;
+    background: url('../imgs/加号.png') no-repeat;
+    background-color: #ffaa39;
+    background-size: 100%;
+}
+.closeSpan{
+    margin-right: 5px;
+    width: 18px;
+    height: 18px;
+    background: url('../imgs/减号.png') no-repeat;
+    background-color: #047bff;
+    background-size: 100%;
+}
+.chaSpan{
+    margin-right: 5px;
+    width: 18px;
+    height: 18px;
+    background: url('../imgs/叉.png') no-repeat;
+    background-color: #b8b8b8;
+    background-size: 100%;
+}
+.loadSpan{
+    margin-right: 5px;
+    width: 18px;
+    height: 18px;
+    background: url('../imgs/加载.png') no-repeat;
+    background-size: 100%;
+}
+.emptySpan{
+    margin-right: 5px;
+    width: 18px;
+    height: 18px;
+    background-color: #d9d9d9;
+}
+.fa_box{
+    margin-left: 20px;
+}
+.click_span{
+    flex: 1;
+}
+.label_span{
+    flex: 1;
+}

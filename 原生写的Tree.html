@@ -3,44 +3,92 @@
 	<head>
 		<meta charset="utf-8">
 		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<style>
+			#tree{
+				background-color: #C9C8C8;
+			}
+			[name="treeCheck"]{
+				display: none;
+			}
+			[name="treeCheck"]~label{
+				color: green;
+			}
+			[name="treeCheck"]:checked~label{
+				color: red;
+			}
+		</style>
 	</head>
-	<body>
+	<body style="margin: 0;padding: 0;">
 		<div id="tree"></div>
-		<hr>
 		<div onclick="getChecked()">点击获取选中的obj</div>
 		<script type="text/javascript">
 			function mimeTree(domId,option){
 			
 				var that = this;
 				this.cache = {};
+				option.default = JSON.parse(JSON.stringify(option.default))
+				if(option.hasCannotChecked){
+					option.isLinkage = false
+				}
+				option.max = parseInt(option.max) || -1;
 				this.tree = JSON.parse(JSON.stringify(option.tree));
 				this.direction = "";
+				this.option = option;
 				this.init = function(cb){
 					var gui = that.gui();
 					that.cache[gui] = {
 						child:that.tree
 					};
-					document.querySelector('#'+domId).innerHTML = `<div id="fa_${gui}"><input id="check_${gui}" type="checkbox" style="display:none;"></div>`
+					document.querySelector('#'+domId).style.overflow = 'auto'
+					if(option.width){
+						document.querySelector('#'+domId).style.width = option.width
+					}
+					
+					if(option.height){
+						document.querySelector('#'+domId).style.height = option.height
+					}
+					var str = ``,faDivPadding = `padding-bottom:10vw;`
+					var menu_position = option.menu_position || "top";
+					if(option.menu && menu_position == "top"){
+						faDivPadding = `padding-top:10vw;`
+						str += `<div id="treeMenu_${gui}" style="position:absolute;width:100%;top:0;display:flex;height:10vw;overflow:hidden;">
+						        </div>`
+					}
+					str += `<div id="fa_${gui}" style="${faDivPadding}">
+								  <input id="check_${gui}" type="checkbox" style="display:none;">
+							   </div>`
+					if(option.menu && menu_position == "bottom"){
+						str += `<div id="treeMenu_${gui}" style="position:absolute;width:100%;bottom:0;display:flex;height:10vw;overflow:hidden;">
+						        </div>`
+					}		   
+					document.querySelector('#'+domId).innerHTML = str;
 					that.drawArr(that.tree,gui);
 					that.default(option.default)
 					cb(that)
 				},
-				this.drawArr = function(arr,faId,comePush){
-					if(comePush){
-						var oldIdArr = []
-					}
+				this.drawArr = function(arr,faId,comePush,er){
 					arr.forEach(function(obj,index){
 						if(comePush){
-							that.cache[faId].child.push(obj)
-							oldIdArr.push(obj.id);
+							
+						    if(er){
+								var len = index;
+							}else{
+								var len = that.cache[faId].child.length;
+								that.cache[faId].child.push(obj)
+							}
+							
+							comePush.push(obj.id);
+							that.drawOne(obj,faId,len,comePush) 
+						}else{
+							that.drawOne(obj,faId,index)  	
 						}
-					    that.drawOne(obj,faId,index)  	
 					})
 					if(comePush){
-						return oldIdArr
+						return comePush
 					}
 				}
-				this.drawOne= function(obj,faId,index){
+				this.drawOne= function(obj,faId,index,comePush){
 					var gui = that.gui()
 					obj.faId = faId;
 					that.cache[gui] = obj;
@@ -56,14 +104,165 @@
 					var dom = document.createElement('div')
 					dom.innerHTML = `<div id="box_${gui}"></div><div id="fa_${gui}" style="margin-left:25px;display:none;"></div>`
 					document.querySelector('#fa_'+faId).appendChild(dom)
-					that.drawCheckbox(obj,gui,faId)
 					that.drawOpen(obj,gui)
-					that.drawClick(obj,gui)
+					
+					if(option.hasCannotChecked){
+						if(option.cannotChecked(obj)){
+							// 可以选择
+							that.drawCheckbox(obj,gui,faId)
+							that.drawLabel(obj,gui,faId)
+							if(option.needClick){
+								that.drawClick(obj,gui)
+							}
+						}else{
+							// 不可以选择
+							that.drawClick(obj,gui,faId)
+						}
+					}else{
+						that.drawCheckbox(obj,gui,faId)
+						that.drawLabel(obj,gui,faId)
+						if(option.needClick){
+							that.drawClick(obj,gui)
+						}
+					}
+					
+
+					
 					that.drawOldId(obj,gui)
 					if(obj.child){
-						that.drawArr(obj.child,gui)
+						that.drawArr(obj.child,gui,comePush,2)
 					}
 				}
+				this.drawLabel= function(obj,gui,faId){
+									var dom = document.createElement('label')
+									dom.id = "label_" + gui;
+									dom.setAttribute('for','check_' + gui)
+									if(!option.needClick){
+										dom.innerHTML = obj.name
+									}else{
+										dom.innerHTML = "(/)"
+									}
+									document.querySelector('#box_'+gui).appendChild(dom)
+									dom.addEventListener('click',function(event){
+										var isChecked = document.querySelector('#check_'+gui).checked;   // 点击前的状态
+										if(option.isLinkage){
+
+                                         // 一些条件判定可以阻止
+
+										isChecked = !isChecked
+								
+										var childs = that.cache[gui].child || [];
+										var brotherLen =  that.cache[faId].child.length;
+										if(isChecked){
+											var alreadyCheck = 1;
+										}else{
+											var alreadyCheck = -1;
+										}
+										
+										Array.prototype.slice.call(document.querySelectorAll('.faId_'+faId)).forEach(function(x){
+											if(x.checked){
+												alreadyCheck++
+											}
+										})
+										
+										<!-- 向下传递 -->	
+										if(that.direction=="down"){
+											childs.forEach(function(x){
+												if(document.querySelector('#check_'+x._id).checked==isChecked){
+													
+												}else{
+													document.querySelector('#label_'+x._id).click()
+												}
+											})
+										}
+										<!-- 向上传递 -->
+										if(that.direction=="up"){
+											if(brotherLen==alreadyCheck){
+												if(document.querySelector('#check_'+faId).checked){
+													
+												}else{
+													document.querySelector('#label_'+faId).click()
+												}
+											}else{
+												if(document.querySelector('#check_'+faId).checked){
+													document.querySelector('#label_'+faId).click()
+												}
+											}
+										}
+				
+										if(that.direction==""){
+											<!-- 向下传递 -->
+											childs.forEach(function(x){
+												if(document.querySelector('#check_'+x._id).checked==isChecked){
+													
+												}else{
+													that.direction = 'down'
+													document.querySelector('#label_'+x._id).click()
+												}
+											})
+											<!-- 向上传递 -->
+				                      if(brotherLen==alreadyCheck){
+												that.direction = 'up'
+				                      	if(document.querySelector('#check_'+faId).checked){
+				                      		
+				                      	}else{
+											
+				                      		document.querySelector('#label_'+faId).click()
+				                      	}
+				                      }else{
+												that.direction = 'up'
+				                      	if(document.querySelector('#check_'+faId).checked){
+				                      		document.querySelector('#label_'+faId).click()
+				                      	}
+				                      }
+											
+											<!-- direction恢复 -->
+											that.direction="";
+											}
+											
+										}else{
+											var len = that.getCheck().length
+											if(option.max > 0 && len >= option.max){
+												// 超过最大值
+												event.preventDefault()
+												return;
+											}
+											
+											isChecked = !isChecked
+										}
+										option.check(that.cache[gui],gui,that)
+										
+										if(isChecked){
+											// 添加
+											if(!option.default.includes(obj.id)){
+												option.default.push(obj.id)
+											}
+										}else{
+											// 删除
+											var index = option.default.indexOf(obj.id)
+											if(index != -1){
+												option.default.splice(index,1)
+											}
+										}
+										
+										
+										// 同一个ID，（只在手动点击触发实现）
+										if(event.x != 0 && event.y != 0){
+											var lis = document.querySelectorAll('#oldId_'+obj.id)
+											for(var i=0;i<lis.length;i++){
+												var li_gui = lis[i].getAttribute('data-gui')
+												if(li_gui != gui){
+													 var li_check = document.querySelector('#check_' + li_gui)
+													 if(li_check.checked != isChecked){
+														 document.querySelector('#label_' + li_gui).click();
+													 }
+												}
+											}
+										}
+										
+										
+									})
+								}
 				this.drawCheckbox= function(obj,gui,faId){
 					var dom = document.createElement('input')
 					dom.setAttribute('type','checkbox')
@@ -71,72 +270,6 @@
 					dom.id = "check_" + gui;
 					dom.className = 'faId_' + faId;
 					document.querySelector('#box_'+gui).appendChild(dom)
-					dom.addEventListener('click',function(){
-						var isChecked = this.checked;
-						var childs = that.cache[gui].child;
-						var brotherLen =  that.cache[faId].child.length;
-						var alreadyCheck = 0;
-						Array.prototype.slice.call(document.querySelectorAll('.faId_'+faId)).forEach(function(x){
-							if(x.checked){
-								alreadyCheck++
-							}
-						})
-						
-						<!-- 向下传递 -->	
-						if(that.direction=="down"){
-							childs.forEach(function(x){
-								if(document.querySelector('#check_'+x._id).checked==isChecked){
-									
-								}else{
-									document.querySelector('#check_'+x._id).click()
-								}
-							})
-						}
-						<!-- 向上传递 -->
-						if(that.direction=="up"){
-							if(brotherLen==alreadyCheck){
-								if(document.querySelector('#check_'+faId).checked){
-									
-								}else{
-									document.querySelector('#check_'+faId).click()
-								}
-							}else{
-								if(document.querySelector('#check_'+faId).checked){
-									document.querySelector('#check_'+faId).click()
-								}
-							}
-						}
-
-						if(that.direction==""){
-							<!-- 向下传递 -->
-							childs.forEach(function(x){
-								if(document.querySelector('#check_'+x._id).checked==isChecked){
-									
-								}else{
-									that.direction = 'down'
-									document.querySelector('#check_'+x._id).click()
-								}
-							})
-							<!-- 向上传递 -->
-                            if(brotherLen==alreadyCheck){
-								that.direction = 'up'
-                            	if(document.querySelector('#check_'+faId).checked){
-                            		
-                            	}else{
-                            		document.querySelector('#check_'+faId).click()
-                            	}
-                            }else{
-								that.direction = 'up'
-                            	if(document.querySelector('#check_'+faId).checked){
-                            		document.querySelector('#check_'+faId).click()
-                            	}
-                            }
-							
-							<!-- direction恢复 -->
-							that.direction="";
-							option.check(that.cache[gui],gui,that)
-						}
-					})
 				}
 				this.drawOpen= function(obj,gui){
 					var dom = document.createElement('span')
@@ -156,7 +289,6 @@
 				}
 				this.drawClick= function(obj,gui){
 					var dom = document.createElement('span')
-					dom.setAttribute('type','checkbox')
 					dom.id = "click_" + gui;
 					dom.innerHTML = obj.name
 					document.querySelector('#box_'+gui).appendChild(dom)
@@ -178,26 +310,44 @@
 					return(S4() + S4() + S4() + S4() + S4() + S4() + S4() + S4());
 				}
 				this.push = function(id,arr){
-					<!-- that.cache[id].child = arr -->
-					var oldIdArr = that.drawArr(arr,id,1);
-					if(document.querySelector('#check_'+id).checked){
-						that.default(oldIdArr)
+					var oldIdArr = that.drawArr(arr,id,[]);
+					if(document.querySelector('#check_'+id) && document.querySelector('#check_'+id).checked){
+						if(option.isLinkage){
+							that.default(oldIdArr)
+						}
+					}else{
+						var jiaoji = oldIdArr.filter(function(id){
+							if(option.default.includes(id)){
+								return id;
+							}
+						})
+						that.default(jiaoji)
 					}
 				}
 				this.default = function(arr){
 					arr.forEach(function(x){
 						if(document.querySelector('#oldId_'+x)){
-							var gui = document.querySelector('#oldId_'+x).getAttribute('data-gui')
-							document.querySelector('#check_'+gui).click()
+							var guis = document.querySelectorAll('#oldId_'+x)
+							for(var i=0;i<guis.length;i++){
+								var gui = guis[i].getAttribute('data-gui')
+								// 没选中就选中
+								if(document.querySelector('#check_'+gui) && !document.querySelector('#check_'+gui).checked){
+									document.querySelector('#label_'+gui).click()
+								}
+							}
 						}
 					})
 				}
-				this.getCheck =function(){
+				this.getCheck =function(type){
 					var arr = [];
+					var obj = {}
 				    Array.prototype.slice.call(document.querySelectorAll('[name=treeCheck]:checked')).forEach(function(x){
 						var _id = x.getAttribute('id').split('_')[1]
-						arr.push(that.cache[_id])
+						obj[that.cache[_id].id] = that.cache[_id]
 					})
+					for(var k in obj){
+						arr.push(obj[k])
+					}
 					return arr;
 				}
 			}
@@ -206,8 +356,9 @@
 			var arr = [{
 					name:"一级A",
 					id:"1A",
+					union: true,
 					child:[{
-					name:"二级AA",
+					name:"二级AA_咔咔咔咔咔咔扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩",
 					id:"2AA",
 					child:[]
 				},{
@@ -241,8 +392,14 @@
 				}]
 				},{
 					name:"一级B",
+					union: true,
 					id:"1B",
 					child:[{
+					name:"二级AA_咔咔咔咔咔咔扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩扩",
+					id:"2AA",
+					union: true,
+					child:[]
+				},{
 					name:"二级BA",
 					id:"2BA",
 					child:[]
@@ -256,6 +413,7 @@
 					child:[]
 				}]
 				},{
+					union: true,
 					name:"一级C",
 					id:"1C",
 					child:[{
@@ -275,44 +433,64 @@
 			var A =	null;
 			var flag = 1;
 			   new mimeTree('tree',{
+				   closeType: "methods",
+				   max: 3,  // 仅支持再isLinkage：false情况下使用
+				   needClick: true,
+				   isLinkage: true,
+				   // hasCannotChecked: true,
+				   cannotChecked:function(obj){
+					   if(obj.union){
+						   return false;
+					   }
+					   return true;
+				   },
+				   width: '100vw',
+				   height: '100vw',
+				   menu: true,
 				   tree: arr,
 				   check:function(obj,id,tree){
-					   console.log(obj,id,tree)
+					   // console.log(obj,id,tree)
 				   },
 				   open:function(obj,id,tree){
-					   console.log(obj,id,tree)
+					   // console.log(obj,id,tree)
 				   },
 				   click:function(obj,id,tree){
-					   console.log(obj,id,tree)
+					   // console.log(obj,id,tree)
 					   if(flag==1){
 						   flag++;
 						   tree.push(id,[{
 								name:"测试a",
 								id:"a",
 								child:[{
-									name:"测试a1",
-									id:"a1",
-									child:[]
-									},{
-										name:"测试a2",
-										id:"a2",
-										child:[]
-									},
+								name:"测试a1",
+								id:"a1"},{
+								name:"测试a2",
+								id:"a2"}
 							]},{
 								name:"测试b",
-								id:"b",
-								child:[]
+								id:"2AA",
+								union: true,
+								child:[{
+								name:"测试b1",
+								id:"b1"},{
+								name:"测试b2",
+								id:"b2"}]
 							}
 					      ])
 					   }  
 				   },
-				   default:['2AA','2AC']   //默认值	
+				   default:['2AA','a1','a2']   //默认值	
 			   }).init(function(tree){
 				   A = tree;
 			   })
 		function getChecked(){
 			console.log(A.getCheck())
-		}	   
+		}
+			   
+			   
+			   // 参数添加 max，只选人功能，只选部门功能，default选中的内容，只要手动关闭，后续下转不自动选中
+			   //  改成label添加事件，把checkbox事件移除
+			   // click
 		</script>
 	</body>
 </html>

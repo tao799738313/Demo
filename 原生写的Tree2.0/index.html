@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="css/tree.css">
+	</head>
+	<body style="margin: 0;padding: 0;">
+		<div id="tree"></div>
+	    <div onclick="treeShow()">打开tree</div>
+		<script src="js/methods.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/tree.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			var arr = [{
+				name: "一级A",
+				id: "1A",
+				union: true,
+				child: [{
+					name: "二级AA(2AA)",
+					id: "2AA",
+					child: []
+				}, {
+					name: "二级AB",
+					id: "2AB",
+					child: []
+				}, {
+					name: "二级AC",
+					id: "2AC",
+					child: [{
+						name: "三级ACA",
+						id: "3ACA",
+						child: []
+					}, {
+						name: "三级ACB",
+						id: "3ACB",
+						child: []
+					}, {
+						name: "三级ACC",
+						id: "2ACC",
+						child: [{
+							name: "四级ACCA",
+							id: "4ACCA",
+							child: []
+						}, {
+							name: "四级ACCB",
+							id: "4ACCB",
+							child: []
+						}]
+					}]
+				}]
+			}, {
+				name: "一级B",
+				union: true,
+				id: "1B",
+				child: [{
+					name: "二级BA(2AA)",
+					id: "2AA",
+					child: []
+				}, {
+					name: "二级BB",
+					id: "2BB",
+					child: []
+				}, {
+					name: "二级BC",
+					id: "2BC",
+					child: []
+				}, {
+					name: "二级BD",
+					id: "2BD",
+					child: []
+				}]
+			}, {
+				union: true,
+				name: "一级C",
+				id: "1C",
+				child: [{
+					name: "二级CA",
+					id: "2CA",
+					child: []
+				}, {
+					name: "二级CB",
+					id: "2CB",
+					child: []
+				}, {
+					name: "二级CC",
+					id: "2CC",
+					child: []
+				}]
+			}]
+			var A = null;
+			var flag = 1;
+			
+			function treeShow(){
+				if(A){
+					A.show(function(){
+						document.querySelector('#tree').style.display = 'block'
+					})
+				}else{
+					new mimeTree('tree', {
+						tree: arr,
+						default: ['2AA','a1', 'a2'], // 自动选中的值，如果sameIdHandle: false，只会选中第一个dom
+						closeType: "hash",  // methods后退键(默认)， btn按钮
+						isLinkage: false,  // 是否层级联动，子节点全选父节点也会自动选中
+						sameIdHandle: true, // 同一个id共同选中或者不选中，默认true
+					    // max: 2, // 仅支持在isLinkage：false情况下使用
+						radio: true, // 使用单选，效果同max:1, default只取第一个
+						hasCannotChecked: false, // 这个是true时，isLinkage = false
+						cannotChecked: function(obj) {  // hasCannotChecked: true 的情况下才能用
+							if (obj.union) {
+								return false;
+							}
+							return true;
+						},
+						width: '100vw', // 不填就是100vw
+						height: '100vh',  // 不填就是100vh
+						closeFun: function(){
+							document.querySelector('#tree').style.display = 'none'
+						},
+						check: function(obj, id, tree) {
+							// console.log(obj,id,tree)
+						},
+						open: function(obj, id, tree) {
+							// console.log(obj,id,tree)
+						},
+						needClick: true,  // 点名字有自己的操作，关掉就点名字选中
+						click: function(obj, id, tree) {
+							// console.log(obj,id,tree)
+							if (flag == 1) {
+								flag++;
+								tree.push(id, [{
+									name: "测试a",
+									id: "a",
+									child: [{
+										name: "测试a1",
+										id: "a1"
+									}, {
+										name: "测试a2",
+										id: "a2"
+									}]
+								}, {
+									name: "测试b(2AA)",
+									id: "2AA",
+									union: true,
+									child: [{
+										name: "测试b1",
+										id: "b1"
+									}, {
+										name: "测试b2",
+										id: "b2"
+									}]
+								}])
+							}
+						},
+						checkOK: function(all,check,check2,check3){
+						    // all，含有default
+							// check，当前所有name:checked的真实id
+							// check2，check的详细数据
+							// check3，check的真实被选中的uuid
+							console.log(all);
+							console.log(check);
+							console.log(check2);
+							console.log(check3);
+							// 如果使用了 history，需要自行删除路由
+							methods.delHistory();
+							document.querySelector('#tree').style.display = 'none'
+						},
+						closeFun: function () {
+						    document.querySelector('#tree').style.display = 'none';
+						},
+					}).init(function(tree) {
+						A = tree;
+						document.querySelector('#tree').style.display = 'block'
+					})
+				}
+			}
+		</script>
+		<script type="text/javascript">
+			// 真实使用
+			// function xuanren() {
+			//     if(A){
+			//         A.show(function () {
+			//             $('#tree').show()
+			//         })
+			//     }else{
+			//         new mimeTree('tree',{
+			//             // width: '100vw',
+			//             // height: '100vw',
+			//             tree: tree,
+			//             default: tree_default,   //默认值
+			//             closeType: "methods",
+			//             // max: 3,  // 仅支持再isLinkage：false情况下使用
+			//             needClick: false,
+			//             isLinkage: true,
+			//             hasCannotChecked: true, // isLinkage: false,
+			//             isHasOpenSpan:function(obj){
+			//                 if(obj.type == "UNIT"){
+			//                     return true;
+			//                 }
+			//                 return false;
+			//             },
+			//             cannotChecked:function(obj){
+			//                 if(obj.type == "UNIT"){
+			//                     return false;
+			//                 }
+			//                 return true;
+			//             },
+			//             check:function(obj,id,checkState,tree){
+			//                 // return false;
+			//             },
+			//             open:function(obj,id,tree){
+			//                 // console.log(obj,id,tree)
+			//                 if(!obj.getState){
+			//                     // 获取
+			//                     obj.getState = 1
+			//                     $('#open_'+id)[0].className = "loadSpan"
+			//                     $.ajax({
+			//                         type:'post',
+			//                         url:basePath+'app/common/data/OfficeAndUserTreeById', // 'app/kuaidian/kuaidianSales/getSales',
+			//                         async:true,
+			//                         dataType:"json",
+			//                         data: {
+			//                             "officeId": obj.id,
+			//                         },
+			//                         success:function(res){
+			//                             if(res.length == 0){
+			//                                 obj.getState = 2
+			//                                 $('#open_'+id)[0].className = "chaSpan"
+			//                             }else{
+			//                                 obj.getState = 3
+			//                                 $('#open_'+id)[0].className = "closeSpan"
+			//                                 tree.push(id,res)
+			//                                 $('#fa_'+id).show()
+			//                             }
+			//                         },
+			//                         error:function () {
+			//                             obj.getState = ""
+			//                             $('#open_'+id)[0].className = "openSpan"
+			//                         }
+			//                     })
+			//                     return ""
+			//                 }else if(obj.getState == 1){
+			//                     // 正在获取
+			//                     $('#open_'+id)[0].className = "loadSpan"
+			//                     return ""
+			//                 }else if(obj.getState == 2){
+			//                     // 获取过了而且是空
+			//                     return ""
+			//                 }
+			//             },
+			//             click:function(obj,id,tree){
+			
+			//             },
+			//             checkOK: function(all,check1,check12,check3){
+			//                 // 如果关闭弹窗需要自行删除路由
+			//                 methods.comfirm("当前选择人数：" + all.length + "，确认选择？",function () {
+			//                     tree_default = all;
+			//                     var arr = []
+			//                     all.forEach(function (id) {
+			//                         arr.push(A.cache2[id])
+			//                     })
+			//                     drawPeople(arr);
+			//                     methods.delHistory();
+			//                     $('#tree').hide();
+			//                 })
+			//             },
+			//             closeFun: function () {
+			//                 $('#tree').hide();
+			//             },
+			//         }).init(function(tree){
+			//             A = tree;
+			//             $('#tree').show();
+			//         })
+			//     }
+			// }
+		</script>
+	</body>
+</html>

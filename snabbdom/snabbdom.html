@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		<div id="container">
+			<span>123123</span>
+		</div>
+		
+		<script src="https://cdn.bootcdn.net/ajax/libs/snabbdom/0.5.1/snabbdom_style.js"></script>
+		<script src="https://cdn.bootcdn.net/ajax/libs/snabbdom/0.5.1/snabbdom_props.js"></script>
+		<script src="https://cdn.bootcdn.net/ajax/libs/snabbdom/0.5.1/snabbdom_eventlisteners.js"></script>
+		<script src="https://cdn.bootcdn.net/ajax/libs/snabbdom/0.5.1/snabbdom_class.js"></script>
+		<script src="https://cdn.bootcdn.net/ajax/libs/snabbdom/0.5.1/snabbdom_attributes.js"></script>
+		<script src="https://cdn.bootcdn.net/ajax/libs/snabbdom/0.5.1/h.js"></script>
+		<script src="https://cdn.bootcdn.net/ajax/libs/snabbdom/0.6.5/tovnode.js"></script>
+		<script src="https://cdn.bootcdn.net/ajax/libs/snabbdom/0.5.1/snabbdom.js"></script>
+		<script type="text/javascript">
+			
+			var toVNode = tovnode.toVNode
+			var patch = snabbdom.init([
+			      snabbdom_attributes,
+			      snabbdom_class,
+			      snabbdom_attributes,
+			      snabbdom_props,
+			      snabbdom_style,
+			      snabbdom_eventlisteners
+			  ]);
+			  
+            console.log(toVNode(document.querySelector('#container')))
+			var vnode = h('div#container.two.classes', { on: { click: someFn } }, [
+			  h('span', { style: { fontWeight: 'bold' } }, 'This is bold'),
+			  ' and this is just normal text',
+			  h('a', { props: { href: '/foo' } }, 'I\'ll take you places!')
+			])
+			// Patch into empty DOM element – this modifies the DOM as a side effect
+			patch(container, vnode)
+
+			var newVnode = h('div#container.two.classes', { on: { click: someFn } }, [
+			  h('span', { style: { fontWeight: 'normal', fontStyle: 'italic' } }, 'This is now italic type'),
+			  ' and this is still just normal text',
+			  h('a', { props: { href: '/bar' } }, 'I\'ll take you places!')
+			])
+			// Second `patch` invocation
+			patch(vnode, newVnode) // Snabbdom efficiently updates the old view to the new state
+			
+			
+	        function someFn(){
+				alert('成功')
+			}
+		</script>
+	</body>
+</html>
