@@ -2,14 +2,13 @@
  * Created by taotao on 2018-12-05.
  */
 
-
 var accountId = methods.getQueryString("accountId"),
     agentId = methods.getQueryString("agentId"),
     gui = methods.getQueryString("id"),
     userCode = methods.getQueryString("userCode"),
-    cookieObj = JSON.parse(decodeURIComponent(methods.getCookie("yq_hz_user_" + accountId).replace(/(^\"*)|(\"*$)/g, ""))),
+    cookieObj = JSON.parse(decodeURIComponent(methods.getCookie("yq_hz_user_" + agentId).replace(/(^\"*)|(\"*$)/g, ""))),
     userId = methods.getCookie("yq_qy_userid_" + agentId);
-    openId = cookieObj.openId;
+
 
 var basePath = methods.basePath;
 //appSrc是线上图片前缀
@@ -22,27 +21,28 @@ var timeMask = methods.timeMask;
 var qrcode;
 var canvasObj = {};
 var coding = "";
-var isTS = 1;  // 启动调试
+var isTS = 0;  // 启动调试
 var appImgBasePath = isTS ? '' : "http://work.hztel10000.com/" // "http://47.110.60.215:9901/"
 //var appImgBasePath =  "http://47.110.60.215:9901/"
 var canvas = $('#canvas')[0]
 var ctx  = canvas.getContext("2d");
 
-var userInfo = {}
-var coding = ""
 var canClick = false
 var touchX = 0
+
+var vaccountId = "wx284e37f5fc87b162";
+var vagentId = "AudDfwFb";
 
 // 入口
 function init() {
     qrcode = new QRCode("qrcode");
 
-    // var img = new Image();
-    // img.crossOrigin = ""
-    // img.id = 'qrCode';
-    // img.style.cssText = 'position: fixed;top: 9999px;';
-    // img.onload = function(){
-    //     $('#yuantuBox').append(img)
+    var img = new Image();
+    img.crossOrigin = ""
+    img.id = 'qrCode';
+    img.style.cssText = 'position: fixed;top: 9999px;';
+    img.onload = function(){
+        $('#yuantuBox').append(img)
 
         var userIcon = new Image();
         userIcon.crossOrigin = ""
@@ -54,75 +54,79 @@ function init() {
         userIcon.onerror = function (event) {
             timeMask("头像获取失败")
         }
-        userIcon.src = cookieObj.userIcon
+        // img.src = './img/qrCodeCanvas.jpg'  //测试，这个大小废弃了
+        userIcon.src = basePath + "app/market/activity/downloadImgByUrl?url=" + encodeURIComponent(cookieObj.userIcon);
 
-    // }
-    // img.onerror = function (event) {
-    //     timeMask("个人二维码获取失败,请先上传头像以及生成个人二维码")
-    // }
+    }
+    img.onerror = function (event) {
+        timeMask("个人二维码获取失败,请先上传头像以及生成个人二维码")
+    }
     // img.src = './img/qrCodeCanvas.jpg'  //测试，这个大小废弃了
     //  img.src = './img/code.jpg'
-
-    // img.src = basePath + "app/market/activity/downloadImg?loginName="+ cookieObj.userName;
-    isLogin()
-
+    
+    //省企业
+    if(accountId != vaccountId){
+    	img.src = basePath + "app/market/activity/downloadImg?qyUserType=sqy&loginName="+ cookieObj.userName;
+    }else{
+    	img.src = basePath + "app/market/activity/downloadImg?qyUserType=hzqy&loginName="+ cookieObj.userName;
+    }
+    
+    getDetail(gui)
 }
-init()
-
+init();
 function isLogin() {
     $(loadMask).show()
+    var phone = cookieObj.phone
+
+    if(!phone){
+        methods.alert("无法访问")
+        return;
+    }
     $.ajax({
         type:'post',
-        url:basePath+'app/market/sale/init',
+        url:basePath+'app/market/activity/findHHrIdByPhone',
         dataType:"json",
         data:{
-            openId:openId
+            phone: cookieObj.phone
         },
         success:function(res){
             $(loadMask).hide()
             if(res.success){
-                userInfo = res.data;
-                coding = res.data.coding
-                console.log("----------"+coding)
-                getDetail(gui)
+                userCode = res.userId
             }else{
-                methods.alert(res.msg,function () {
-                    location.href = "./registered.jsp?accountId=" + accountId
-                });
+                methods.alert("温馨提示:系统检测您当前无合伙人id，如需转发合伙人业务海报关联揽装，请先注册。");
+                // userInfo.userId = "000000"
             }
+            // 获取全部
+            //typeChange()
         },
         error:function () {
             methods.alert("请查看当前网络状况");
         }
     })
 }
+function urlAddParams(url,couserId) {
 
+    var targetUrl="";
+    $.ajax({
+        type:'post',
+        url:basePath+'app/market/activity/urlJointParame',
+        dataType:"json",
+        async:false,	//同步返回
+        data:{
+            agentId: agentId,
+            url: url,
+            couserId:couserId
+        },
+        success:function(res){
+            targetUrl = res.url;
+        },
+        error:function () {
+            methods.alert("参数转换失败");
+        }
+    })
 
-function urlAddParams(url,activity) {
-	
-	url = basePath + 'doc/app/poster/center.jsp?accountId=' + accountId + '&coding='+ coding + '&id=' + activity;
-	
-    return url;
-    // var targetUrl="";
-    // $.ajax({
-    //     type:'post',
-    //     url:basePath+'app/market/activity/urlJointParame',
-    //     dataType:"json",
-    //     async:false,	//同步返回
-    //     data:{
-    //         agentId: agentId,
-    //         url: url,
-    //         couserId:couserId
-    //     },
-    //     success:function(res){
-    //         targetUrl = res.url;
-    //     },
-    //     error:function () {
-    //         methods.alert("参数转换失败");
-    //     }
-    // })
-    //
-    // return targetUrl;
+    return targetUrl;
 }
 
 // 获取详情
@@ -144,6 +148,9 @@ function getDetail(gui) {
                         shareWord:res.activity.shareWord,
                         imageList:res.imageList,
                         arr:[]
+                    };
+                    if (res.activity.goUrl&&res.activity.goUrl.indexOf('{couser_id}'>=0)) {
+                        isLogin();
                     }
                     $('#title').html(res.activity.title)
                     $('#time').html(methods.time2date(res.activity.createTime))
@@ -229,7 +236,7 @@ function touchE() {
     var len = $('#smallList .smallList3').length
     if(len<3){return;}
 
-    if(event.changedTouches[0].pageX - touchX > 200){
+    if(event.changedTouches[0].pageX - touchX > 80){
         // 手指向右，向左移动一位
 
         var last = $('#smallList').children('.smallList3').eq(len-1)
@@ -239,7 +246,7 @@ function touchE() {
         var index = $('#smallList .smallList3').eq(1).attr('data-index')
         $('.indexDiv').eq(index).css('background-color','#008aff')
     }
-    if(event.changedTouches[0].pageX - touchX < -200){
+    if(event.changedTouches[0].pageX - touchX < -80){
         // 手指向左，向右移动一位
         var frist = $('#smallList').children('.smallList3').eq(0)
         $('#smallList').append(frist)
@@ -252,29 +259,27 @@ function touchE() {
 }
 
 function changeUrl(gui,sourceUrl){
-	console.log(sourceUrl);
-
-     var targetUrl = "";
-     $.ajax({
-         type:'POST',
-         url:basePath+'app/oauth2/long2short',
-         dataType:"text",
-         async:false,	//同步返回
-         data:{
-        	 long_url: sourceUrl,
-        	 accountId:accountId
-         },
-         success:function(res){
-        	 console.log(res);
-             targetUrl = res;
-             console.log(res.shortUrl)
-         },
-         error:function(XMLHttpRequest, textStatus, errorThrown){
-             methods.alert("地址转换出错!");
-         }
-     });
- 	console.log(targetUrl);
-     return targetUrl;
+    var targetUrl = "";
+    $.ajax({
+        type:'POST',
+        url:basePath+'app/shorturlapi/long2short',
+        dataType:"text",
+        async:false,	//同步返回
+        data:{
+            url: sourceUrl,
+            activityId_:gui,
+            coUserId_:userCode,
+            loginName_:cookieObj.userName,
+            xsyCode_:cookieObj.xsyCode,
+        },
+        success:function(res){
+            targetUrl = res;
+        },
+        error:function(XMLHttpRequest, textStatus, errorThrown){
+            methods.alert("地址转换出错!");
+        }
+    });
+    return targetUrl;
 }
 
 // 计算比例
@@ -346,7 +351,7 @@ function openCanvas(gui,index) {
             drawElse(gui,index)
 
             var base64 = canvas.toDataURL('image/jpeg',1)
-            var str = `<img src="${base64}" style="width: 80vw;" onclick="event.stopPropagation()">`
+            var str = `<div style="max-height: 80vh;overflow-y:auto;"><img src="${base64}" style="width: 80vw;" onclick="event.stopPropagation()"></div>`
 
             $('#canvasMask').html(str).show()
             $(loadMask).hide()
@@ -380,17 +385,8 @@ function openCanvas(gui,index) {
     }
 }
 
-function isDrawPhoneChange(dom) {
-    if(dom.checked){
-        $('#isDrawPhoneTishi').html("当前海报显示手机号码")
-    }else{
-        $('#isDrawPhoneTishi').html("当前海报隐藏手机号码")
-    }
-}
-
 // 最终绘制
 function drawElse(gui,index) {
-	
     var area = canvasObj[gui].arr[index].area
     if(area==0){
         return
@@ -406,13 +402,15 @@ function drawElse(gui,index) {
                 if(obj.select=="1"){
                     // 活动链接就行用url参数
                     var url = canvasObj[gui].url
-                    var activityId =  canvasObj[gui].activity.id;
-                    url = changeUrl(gui,urlAddParams(url,activityId))
+                    console.log(canvasObj[gui]);
+                    var couserId =  canvasObj[gui].activity.couserId;
+                    url = changeUrl(gui,urlAddParams(url,couserId))
                     //url = changeUrl(gui,url)
                     qrcode.makeCode(url);
                     var qrImg = $('#qrcode').find('canvas')[0]
                     if(qrImg){
-                        ctx.drawImage(qrImg,xywh.x,xywh.y,xywh.w,xywh.h)
+                        white(xywh,qrImg)
+                        // ctx.drawImage(qrImg,xywh.x,xywh.y,xywh.w,xywh.h)
                     }
                 }else if(obj.select=="2"){
                     // 个人名片
@@ -445,12 +443,13 @@ function drawElse(gui,index) {
                     }
                 }else if(obj.select=="3"){
                     // 活动链接就行用url参数
-                	var activityId =  canvasObj[gui].activity.id;
-                    var url = changeUrl(gui,urlAddParams(obj.inp,activityId))
+                    var couserId =  canvasObj[gui].activity.couserId;
+                    var url = changeUrl(gui,urlAddParams(obj.inp,couserId))
                     qrcode.makeCode(url);
                     var qrImg = $('#qrcode').find('canvas')[0]
                     if(qrImg){
-                        ctx.drawImage(qrImg,xywh.x,xywh.y,xywh.w,xywh.h)
+                        white(xywh,qrImg)
+                        // ctx.drawImage(qrImg,xywh.x,xywh.y,xywh.w,xywh.h)
                     }
                 }else if(obj.select=="4"){
                     if(document.querySelector("#code_"+gui+"_"+index+"_"+(i+1))){
@@ -482,18 +481,6 @@ function drawElse(gui,index) {
                     ctx.drawImage($("#logo_"+gui+"_"+index+"_"+(i+1))[0],xywh.x,xywh.y,xywh.w,xywh.h)
                 }
             }
-
-            if(obj.selectAreaType == "Phone"){
-                if($('#isDrawPhone')[0].checked){
-                    // 这个是字体大小等于高
-                    var fontSize = xywh.h;
-                    ctx.font=`normal bold ${fontSize}px Arial`;
-                    ctx.fillStyle= obj.fontColor || "#000000";
-                    ctx.fillText(userInfo.phone,xywh.x + ((xywh.w - fontSize*6.2)/2) ,xywh.y + xywh.h * 0.87);
-                }
-            }
-
-
         }
     }
 }
@@ -577,17 +564,26 @@ function getAllImg(arr,index,gui,index2,cb) {
 
 // 选择海报记录
 function saveCheckPostersRecord(gui,url) {
-    // $(loadMask).show()
-    // $.ajax({
-    //     type:'post',
-    //     url:basePath+'app/poster/record/saveCheckPostersRecord',
-    //     dataType:"json",
-    //     data:{activityId:gui,imgUrl:url,userId:userId,partnerId:userCode},
-    //     success:function(res){
-    //
-    //     },
-    //     error:function () {
-    //         // methods.alert("请查看当前网络状况");
-    //     }
-    // })
+    $(loadMask).show()
+    $.ajax({
+        type:'post',
+        url:basePath+'app/poster/record/saveCheckPostersRecord',
+        dataType:"json",
+        data:{activityId:gui,imgUrl:url,userId:userId,partnerId:userCode},
+        success:function(res){
+
+        },
+        error:function () {
+            // methods.alert("请查看当前网络状况");
+        }
+    })
+}
+
+// 二维码白边
+function white(xywh,qrImg) {
+    ctx.beginPath();  // 开始画
+    ctx.fillStyle = "white"; //设置颜色
+    ctx.fillRect(xywh.x,xywh.y,xywh.w,xywh.h);//填充矩形
+    ctx.stroke();
+    ctx.drawImage(qrImg,xywh.x+xywh.w*0.05,xywh.y+xywh.h*0.05,xywh.w*0.9,xywh.h*0.9)
 }
