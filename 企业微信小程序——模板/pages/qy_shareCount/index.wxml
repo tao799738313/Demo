@@ -1,0 +1,32 @@
+<!--pages/qy_shareCount/index.wxml-->
+<view class="listBox2" style="color: grey">
+   <view wx:for="{{list}}" wx:item="item" wx:key="id">
+       <view class="list">
+           <view class="line">
+              <image src="/images/often_use/act.png" class="icon6"></image>
+               <view class="line_m">
+                  {{item.title}}
+               </view>
+           </view>
+           <view class="line">
+            <view class="line_m">
+              分享了 {{item.sharenum || 0}} 次
+            </view>
+           </view>
+           <view class="line" wx:if="{{item.region.length != 0}}">
+            <view class="line_m">
+              分享内容被访问了 {{item.opennum || 0}} 次
+              </view>
+           </view>
+           <view class="line">
+            <view class="line_m">
+              分享内容被参与了 {{item.joinnum || 0}} 次
+              </view>
+           </view>
+       </view>
+   </view>
+</view>
+
+<list_status id="list_status" />
+<tips id="tips" />
+<prize id="prize" />

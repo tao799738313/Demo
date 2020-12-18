@@ -1,0 +1,6 @@
+<!--components/list_status/list_status.wxml-->
+<view wx:if="isShow">
+    <view class="{{status}}">
+        {{statusObj[status] || ""}}
+    </view>
+</view>

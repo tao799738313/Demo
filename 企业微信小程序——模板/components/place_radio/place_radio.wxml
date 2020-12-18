@@ -1,0 +1,32 @@
+<!--components/place-radio/place-radio.wxml-->
+<view class="mask" hidden="{{!isShow}}">
+   <view class="maskBox_close">
+      <view class="btnLineRight">
+           <view class="close_top" bindtap="close">
+              <image class="btn_close" src="/images/often_use/close_white.png" ></image>
+           </view>
+        </view>
+       <view class="maskBox">
+            <view class="tishi">
+               请选择地址
+            </view>
+            <view class="maxH100vw">
+               <radio-group bindchange="radioChange">
+                  <label class="select" wx:for="{{list}}" wx:for-item="item">
+                     <radio value="{{item.id}}" checked="{{item.checked}}"></radio>
+                     <view class="placeList {{item.checked==true?'active':''}}">
+                        <view>{{item.name}} 【{{item.phone}}】 </view>
+                        <view wx:if="{{item.region.length != 0}}">{{item.region[0]}},{{item.region[1]}},{{item.region[2]}}</view>
+                        <view wx:if="{{item.address}}">{{item.address}}</view>
+                     </view>
+                  </label>
+               </radio-group>
+            </view>
+            <view>
+               <view class="tijiaoBtn" bindtap="chooseOk">
+                   选好了
+                </view>
+            </view>
+       </view>
+    </view>
+</view>

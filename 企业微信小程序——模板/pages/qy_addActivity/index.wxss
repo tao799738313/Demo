@@ -1,0 +1,10 @@
+/* pages/qy_addActivity/index.wxss */
+
+.list{
+  margin: 3vw 5vw; 
+  padding: 4vw;
+  background-color: white;
+  border-radius: 2vw;
+  display: flex;
+  align-items: center;
+}

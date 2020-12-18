@@ -1,0 +1,51 @@
+<!--pages/user/index.wxml-->
+
+<view>
+  <view class="userInfo" wx:if="{{!userInfo}}">
+    <image class="userInfo_img" src="/images/often_use/userImg.png" mode='widthFix'></image>
+    <button id="getUserInfoBtn" open-type="getUserInfo" bindgetuserinfo="getUserInfo"> 点击授权登录 </button>
+   </view>
+   <view class="userInfo" wx:else>
+       <image class="userInfo_img" src="{{userInfo.avatarUrl}}" mode='widthFix'></image>
+       <view style="flex:1;">
+          <view id="nickName">{{userInfo.nickName}}</view>
+          <view wx:if="{{!userInfo.phone}}">
+                <button id="btn_getPhone" open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber">
+                  手机号获取
+                </button>
+          </view>
+            <view wx:else id="userPhone">
+              {{userInfo.phone}}
+          </view>
+       </view>
+   </view>
+   <view class="listBox2" style="padding-top:2vw;">
+        <view class="list">
+            <view class="line" bindtap="toPage" data-page="1">
+            <image src="/images/often_use/prize.png" class="icon6"></image>
+              <view class="line_m">
+                 我的奖品
+              </view>
+              <image src="/images/often_use/go.png" class="icon_go"></image>
+            </view>
+          </view>
+          <view class="list">
+            <view class="line" bindtap="toPage" data-page="2">
+            <image src="/images/often_use/address.png" class="icon6"></image>
+              <view class="line_m">
+                 我的地址
+              </view>
+              <image src="/images/often_use/go.png" class="icon_go"></image>
+            </view>
+          </view>
+          <view class="list">
+            <view class="line" bindtap="toPage" data-page="3">
+            <image src="/images/often_use/act.png" class="icon6"></image>
+              <view class="line_m">
+                参与过的活动
+              </view>
+              <image src="/images/often_use/go.png" class="icon_go"></image>
+            </view>
+          </view>
+   </view>
+</view>

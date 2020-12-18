@@ -1,0 +1,4 @@
+/* pages/qy_actWinList/index.wxss */
+view{
+  font-size: 14px;
+}

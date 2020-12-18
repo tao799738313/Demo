@@ -1,0 +1,25 @@
+<!--pages/wx_joinHistory/index.wxml-->
+
+<view class="listBox">
+    <view wx:for="{{list}}" wx:for-index="idx" wx:for-item="item" wx:key="id">
+        <view class="list">
+            <image class="img16vw" src="{{item.img}}"></image>
+            <view style="flex:1;">
+                <view class="title">
+                    {{item.title}}
+                </view>
+                <view class="time">
+                    {{item.startTime}} 到 {{item.endTime}}
+                </view>
+            </view>
+            <view class="fenxBtn {{item.ising ? '' : 'grey'}}" bindtap="toPage" data-type="{{item.lottery_type}}" data-id="{{item.id}}">
+                查看
+            </view>
+        </view>
+    </view>
+    <list_status id="list_status" />
+</view>
+
+
+<tips id="tips" />
+<prize id="prize" />

@@ -1,0 +1,4 @@
+<!--components/tips/tips.wxml-->
+<view class='tips' hidden="{{!isShow}}">
+    {{text}}
+</view>

@@ -1,0 +1,207 @@
+<!--pages/wx_addAct_jiugongge/index.wxml-->
+
+
+<view>
+  <view class="listBox2" style="color: grey">
+    <view class="listTips" style="padding-top:4vw;">
+      为你的抽奖活动取个名字吧
+      </view>
+      <view class="list">
+            <view class="line">
+                <image src="/images/often_use/act.png" class="icon6"></image>
+                <view class="line_m">
+                    <input placeholder="请输入活动名称" data-inp="title"  value='{{title}}' bindinput="input"></input>
+                </view>
+            </view>
+     </view>
+     <view class="listTips">
+         开始时间，结束时间
+     </view>
+     <view class="list">      
+            <view class="line">
+            <image src="/images/often_use/start.png" class="icon6"></image>
+              <view class="line_m">
+                  <picker mode="date" value="{{startDate}}" data-value="startDate" bindchange="bindDateChange">
+                    <input placeholder="开始日期" value='{{startDate}}' disabled></input>
+                  </picker>
+              </view>
+              <view class="line_m">
+                  <picker mode="time" value="{{startTime}}" data-value="startTime" bindchange="bindTimeChange">
+                    <input placeholder="开始时分" value='{{startTime}}' disabled></input>
+                  </picker>
+              </view>
+            </view>
+
+            <view class="line">
+            <image src="/images/often_use/end.png" class="icon6"></image>
+             <view class="line_m">
+                  <picker mode="date" value="{{endDate}}" data-value="endDate" bindchange="bindDateChange">
+                    <input placeholder="结束日期" value='{{endDate}}' disabled></input>
+                  </picker>
+              </view>
+              <view class="line_m">
+                  <picker mode="time" value="{{endTime}}" data-value="endTime" bindchange="bindTimeChange">
+                    <input placeholder="结束时分" value='{{endTime}}' disabled></input>
+                  </picker>
+              </view>
+            </view>
+
+      </view>
+      <view class="listTips">
+         抽奖次数 / 抽奖周期
+      </view>
+      <view class="list">
+              <view class="line">
+              <image src="/images/often_use/cishu.png" class="icon6"></image>
+                <view class="line_m">
+                   <input type="number" placeholder="抽奖次数" data-inp="lotteryMaxCount"  value='{{lotteryMaxCount}}' bindinput="input"></input>
+                </view>
+              </view>
+
+              <view class="line">
+              <image src="/images/often_use/rili.png" class="icon6"></image>
+                <view class="line_m">
+                    <picker bindchange="bindPickerChange" data-value="lotteryCycle" value="{{lotteryCycle}}" range="{{choujiangRate}}" range-key="name">
+                      <input value='{{choujiangRate[lotteryCycle].name}}' ></input>
+                    </picker>
+                </view>
+              </view>
+      </view>
+
+     
+      <view class="list">
+          <view class="line">
+            <view>
+               设置奖品
+            </view>
+            <view class="line_m btnLineRight" wx:if="{{!id}}">
+              <view class="btn red2" bindtap="addPrize">添加</view>
+            </view>
+          </view>
+
+          <view wx:for="{{itemArr}}" wx:for-item="item" class="line" style="padding: 2vw 0;">
+                <image src="{{imgAppSrc}}{{itemObj[item].picture}}" class="img18vw" style="margin-right: 3vw;"></image>
+                <view class="line_m">
+                    <view>
+                         {{itemObj[item].name}}
+                    </view>
+                    <view>
+                         奖品数量：{{itemObj[item].allowWinnerCount}} {{id ? '(剩余：'+ itemObj[item].shengyu +')' : ''}}
+                    </view>
+                    <view>
+                         中奖概率：{{itemObj[item].winRate}} (%)
+                    </view>
+                </view>
+                <view class="btnView">
+                  <view class="blue2 btn" bindtap="updataById" data-id="{{item}}">编辑</view>
+                  <view wx:if="{{!id}}" class="red2 btn" bindtap="delById" data-id="{{item}}">删除</view>
+                </view>
+          </view>
+      </view>
+
+      <view class="list">
+          <view class="line">
+            <view>
+               设置未中奖图片
+            </view>
+          </view>
+          <view class="line">
+              <image src="{{appSrc}}{{noWinImg}}" class="img18vw" style="margin-right: 3vw;" bindtap="updataNoWinImg"> </image>
+              <view class="line_m">
+                  <view>
+                    点击左边图片上传
+                  </view>
+                  <view wx:if="{{ noWinImg == noWinDefaultImg }}">
+                    当前为默认图片
+                  </view>
+              </view>
+              <view class="btnView" wx:if="{{ noWinImg != noWinDefaultImg }}">
+                  <view class="btn red2" bindtap="useDefaultNoWinImg">
+                     默认
+                  </view>
+              </view>
+          </view>
+      </view>    
+  </view>
+
+  <view id="saveBtn" bindtap="toSave">
+        保存
+    </view>
+</view>
+
+
+<view class="mask" hidden="{{!isShow}}">
+    <view class="maskBox_close">
+        <view class="btnLineRight">
+           <view class="close_top" bindtap="hide">
+              <image class="btn_close" src="/images/often_use/close_white.png" ></image>
+           </view>
+        </view>
+
+       <view class="maskBox">
+           <view class="greyTxt">
+              上传奖品图片
+           </view>
+           <view class="flex" style="margin:1vw 3vw 2vw 0;">
+              <image src="{{item.picture ? imgAppSrc + item.picture : '/images/often_use/updataImg.png'}}" class="img18vw" bindtap="updataImg"></image>
+              <view class="flex1">
+                   
+              </view>
+           </view> 
+
+           <view class="greyTxt">
+               奖品名称
+           </view>
+           <view class="inpView {{id ? 'disabled' : ''}}">
+               <input data-inp="item.name"  value='{{item.name}}' bindinput="input" disabled="{{id}}"></input>
+           </view>
+           
+           <view class="greyTxt">
+               奖品类型
+           </view>
+           <view class="inpView {{id ? 'disabled' : ''}}">
+              <picker value="{{item.typeRangeIndex}}" range="{{typeRange}}" range-key="name" bindchange="bindTypeChange" disabled="{{id}}">
+                 <input value='{{typeRange[item.typeRangeIndex].name}}' disabled></input>
+              </picker>
+           </view>
+
+           <view wx:if="{{item.type == 4}}">
+
+           </view>
+
+           <view class="flex">
+              <view class="flex1">
+                  <view class="greyTxt">奖品数量</view>
+                  <view class="inpView {{id ? 'disabled' : ''}}">
+                      <input type="number" data-inp="item.allowWinnerCount"  value='{{item.allowWinnerCount}}' bindinput="input" disabled="{{id}}"></input>
+                  </view>
+              </view>
+              <view class="flex1" style="margin-left:10vw;" wx:if="{{id}}">
+                <view class="greyTxt">剩余</view>
+                  <view class="inpView {{id ? 'disabled' : ''}}">
+                      <input value='{{item.shengyu}}' disabled></input>
+                  </view>
+              </view>
+           </view>
+
+           <view class="greyTxt">
+               中奖概率
+           </view>
+           <view class="inpView">
+               <input type="number" data-inp="item.winRate"  value='{{item.winRate}}' bindinput="input"></input>
+               <view style="text-weight:600; color:red;">
+                  %
+               </view>
+           </view>
+
+
+           <view class="tijiaoBtn" bindtap="tijiao">
+              提交
+           </view>
+        </view>
+    </view>
+</view>
+
+
+<tips id="tips" />
+<prize id="prize" />

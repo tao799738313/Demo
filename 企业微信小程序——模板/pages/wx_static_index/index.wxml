@@ -1,0 +1,51 @@
+<!--index.wxml-->
+<view style="position:relative;background-color:rgb(254,46,62);height:100vh;overflow:hidden;">
+
+  <image id="bgTop" src='/images/index/staticIndex.png' mode="widthFix"></image>
+
+  <view bindtap="toUserPage" class="fixedBtn2">
+
+  </view>
+
+  <!-- <view>
+  <image id="bgTop" src='/images/9gongge/bg.jpg' mode="widthFix"></image>
+  </view>
+  <image bindtap="toUserPage" class="fixedBtn" mode="widthFix" src="/images/9gongge/wode.png"></image>
+
+  <view id='frame_view'>
+    <view class='frame_row'>
+      <view class='frame_item' style='background-color:{{color[0]}}' >
+        <image src='{{images[0]}}'></image>
+      </view>
+      <view class='frame_item' style='background-color:{{color[1]}}' >
+        <image src='{{images[1]}}'></image>
+      </view>
+      <view class='frame_item' style='background-color:{{color[2]}}' >
+        <image src='{{images[2]}}'></image>
+      </view>
+    </view>
+    <view class='frame_row'>
+     <view class='frame_item' style='background-color:{{color[7]}}' >
+        <image src='{{images[7]}}'></image>
+      </view>
+      <view class='frame_item' bindtap='clickLuck'></view>
+       <view class='frame_item' style='background-color:{{color[3]}}' >
+        <image src='{{images[3]}}'></image>
+      </view>
+    </view>
+
+    <view class='frame_row'>
+     <view class='frame_item' style='background-color:{{color[6]}}' >
+        <image src='{{images[6]}}'></image>
+      </view>
+       <view class='frame_item' style='background-color:{{color[5]}}' >
+        <image src='{{images[5]}}'></image>
+      </view>
+       <view class='frame_item' style='background-color:{{color[4]}}' >
+        <image src='{{images[4]}}'></image>
+      </view>
+    </view>
+  </view> -->
+</view>
+<tips id="tips" />
+<prize id="prize" />

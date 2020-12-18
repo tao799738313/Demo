@@ -1,0 +1,58 @@
+<!--pages/wx_userPrize_change/index.wxml-->
+<view style="padding-bottom:20vw;">
+  <view class="listBox2" style="color: grey">
+        <view class="list">
+            <view class="line">
+                <image src="/images/often_use/user.png" class="icon6"></image>
+                <view class="line_m">
+                    <input placeholder="请输入姓名" data-inp="name"  value='{{name}}' bindinput="input"></input>
+                </view>
+            </view>
+            <view class="line">
+            <image src="/images/often_use/phone.png" class="icon6"></image>
+              <view class="line_m">
+                <input placeholder="请输入手机号码" data-inp="phone"  value='{{phone}}' bindinput="input"></input>
+                    </view>
+            </view>
+            <view class="line">
+            <image src="/images/often_use/region.png" class="icon6"></image>
+              <view class="line_m">
+                <picker mode="region" bindchange="bindRegionChange" value="{{region}}" style="width:100%;">
+                    <input placeholder="点击选择省市区" value='{{region.length != 0 ? region[0]+","+region[1]+","+region[2] : ""}}' disabled></input>
+                  </picker>
+              </view>
+              <view id="dingwei" bindtap="dingwei">
+                  定位
+              </view>
+            </view>
+            <view class="line">
+            <image src="/images/often_use/address.png" class="icon6"></image>
+              <view class="line_m">
+                <input placeholder="请输入详细地址" data-inp="address"  value='{{address}}' bindinput="input"></input>
+            </view>
+            </view>
+         </view>
+         <view class="list">
+            <view class="line">
+                <view class="line_m">
+                    设置为默认地址
+                </view>
+                <view>
+                   <switch checked="{{switchChecked}}" bindchange="switchChange" color="rgb(255,89,78)" style="transform: scale(.8) translateX(10px);"/>
+                </view>
+            </view>
+         </view>
+        </view>
+</view>
+
+
+
+<view class="bottom_fixed">
+    <view id="saveBtn" bindtap="toSave">
+        保存
+    </view>
+</view>
+
+
+<tips id="tips" />
+<prize id="prize" />

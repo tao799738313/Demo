@@ -1,0 +1,31 @@
+<!--pages/qy_myActivity/index.wxml-->
+<view class="greyBody">
+   <view class="listBox3">
+       <view class="list" wx:for="{{list}}" wx:for-item="item">
+            <view class="line">
+                <image src="{{item.img}}" class="img16vw" style="margin-right:3vw;"></image>
+                <view>         
+                    <view class="title">
+                        {{item.title}}
+                    </view>
+                    <view class="time">
+                        {{item.startTime}} 到 {{item.endTime}}
+                    </view>
+                </view>
+            </view>   
+           <view class="line btnLineRight" style="padding: 2vw 0;">
+            <view class="btn yellow2" bindtap="fenxiang" data-id="{{item.id}}" data-type="{{item.lotteryType}}">分享</view>
+             <view class="btn green2" bindtap="duijiang" data-id="{{item.id}}">中奖名单</view>
+             <!-- <view class="btn red2" bindtap="delById" data-id="{{item.id}}">删除</view> -->
+             <view class="btn blue2" bindtap="updataById" data-id="{{item.id}}" data-type="{{item.lotteryType}}">编辑</view>
+           </view>
+       </view> 
+   </view>
+
+   <list_status id="list_status" />
+
+</view>
+
+
+<tips id="tips" />
+<prize id="prize" />

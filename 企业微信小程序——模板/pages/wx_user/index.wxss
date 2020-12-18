@@ -1,0 +1,43 @@
+/**index.wxss**/
+.userInfo{
+  background:url(http://wxtest.yunqunet.net/xcx_gd_ewsm/user/topBg.png) no-repeat;
+  background-size: 100% 100%;
+  padding: 5vw 5vw 8vw 5vw;
+  display: flex;
+  align-items: center;
+}
+.userInfo_img{
+  width: 20vw;
+  height: 20vw;
+  border-radius: 50%;
+  margin-right: 4vw;
+}
+#nickName{
+  font-weight: 600;
+  color: white;
+}
+#btn_getPhone{
+  line-height: normal;
+  display: inline-block;
+  font-size: 12px;
+  color: gray;
+  padding: 4px 10px;
+  border-radius: 15px;
+  margin-top:2vw;
+}
+#userPhone{
+   color: white;
+   padding-top: 1vw;
+   font-size: 14px;
+}
+#getUserInfoBtn{
+  color: white;
+  border: 0;
+  background-color: transparent;
+  outline: none;
+  padding: 0;
+  margin: 0;
+}
+button::after{
+ border: none;
+}

@@ -1,0 +1,22 @@
+<!--pages/userPrize/index.wxml-->
+
+<view class="listBox" style="color: grey">
+   <view wx:for="{{list}}" wx:item="item" wx:key="uuid">
+       <view class="list" bindtap="viewPrize" data-id="{{item.uuid}}">
+           <image src="{{imgAppSrc}}{{item.picture}}" class="img18vw" style="margin-right:3vw;"></image>
+           <view>
+              <view class="name">
+                {{item.name}}
+              </view>
+              <view>
+                 来自：{{item.title}}
+              </view>
+           </view>
+       </view>
+   </view>
+</view>
+
+
+<list_status id="list_status" />
+<tips id="tips" />
+<prize id="prize" />

@@ -1,0 +1,324 @@
+/**app.wxss**/
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 200rpx 0;
+  box-sizing: border-box;
+}
+.fs14{
+  font-size: 14px;
+}
+.con{
+  padding: 5vw;
+}
+.greyBody{
+  min-height: 100vh;
+  background-color: rgb(240,240,240);
+}
+#guize{
+  width: 86vw;
+  margin: 5vw auto;
+}
+.guize_title{
+  font-size: 16px;
+  font-weight: 600;
+}
+.guize_line{
+  color: rgb(50,50,50);
+  font-size: 15px;
+  padding-top: 1vw;
+}
+.btnLineRight{
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.btnLineRight .btn{
+  /* font-weight: 600; */
+  font-size: 14px;
+  margin-left: 2vw;
+}
+.btnView .btn{
+  margin: 2vw 0;
+}
+.btnView .red,.btnLineRight .red{
+  color: rgb(255,89,78);
+}
+.btnView .red2,.btnLineRight .red2{  
+  /* 使用red2要把那行的padding上下减1vw */
+  padding: 1vw 2vw 1.4vw;
+  background-color: rgb(255,89,78);
+  color: white;
+  border-radius: 1vw;
+}
+
+.btnView .grey,.btnLineRight .grey{
+  color: #737373;
+}
+.btnView .grey2,.btnLineRight .grey2{  
+  /* 使用red2要把那行的padding上下减1vw */
+  padding: 1vw 2vw 1.4vw;
+  background-color: #737373;
+  color: white;
+  border-radius: 1vw;
+}
+
+.btnView .blue,.btnLineRight .blue{
+  color: #10aeff;
+}
+.btnView .blue2,.btnLineRight .blue2{  
+  /* 使用red2要把那行的padding上下减1vw */
+  padding: 1vw 2vw 1.6vw;
+  background-color: #10aeff;
+  color: white;
+  border-radius: 1vw;
+}
+.btnView .green,.btnLineRight .green{
+  color: #06ae56;
+}
+.btnView .green2,.btnLineRight .green2{  
+  /* 使用red2要把那行的padding上下减1vw */
+  padding: 1vw 2vw 1.6vw;
+  background-color: #06ae56;
+  color: white;
+  border-radius: 1vw;
+}
+
+.btnView .yellow,.btnLineRight .yellow{
+  color: #E6A23C;
+}
+.btnView .yellow2,.btnLineRight .yellow2{  
+  /* 使用red2要把那行的padding上下减1vw */
+  padding: 1vw 2vw 1.6vw;
+  background-color: #E6A23C;
+  color: white;
+  border-radius: 1vw;
+}
+
+.listBox .list{
+  display: flex;
+  border-bottom: 1px solid rgb(240,240,240);
+  align-items: center;
+  padding: 5vw;
+}
+.listBox2 .list {
+  border-bottom: 2vw solid rgb(240,240,240);
+}
+.listBox2 .list .line{
+  display: flex;
+  align-items: center;
+  padding: 3vw 0;
+  margin: 0 5vw;
+}
+.listBox2 .list .line2{
+  display: flex;
+  align-items: center;
+  padding: 3vw 0;
+  margin: 0 5vw;
+  justify-content: space-between;
+}
+.listBox2 .list .line2:nth-of-type(n+2){
+  border-top: 1px solid rgb(240,240,240);
+}
+.listBox2 .list .line:nth-of-type(n+2){
+  border-top: 1px solid rgb(240,240,240);
+}
+
+
+.listBox3 .list {
+  background-color: white;
+  margin-bottom: 2vw;
+  border-top: 1px solid rgb(230,230,230);
+  border-bottom: 1px solid rgb(230,230,230);
+}
+.listBox3 .list .line{
+  display: flex;
+  align-items: center;
+  padding: 3vw 0;
+  margin: 0 5vw;
+}
+.listBox3 .list .line2{
+  display: flex;
+  align-items: center;
+  padding: 3vw 0;
+  margin: 0 5vw;
+  justify-content: space-between;
+}
+.listBox3 .list .line2:nth-of-type(n+2){
+  border-top: 1px solid rgb(240,240,240);
+}
+.listBox3 .list .line:nth-of-type(n+2){
+  border-top: 1px solid rgb(240,240,240);
+}
+
+.listBox .list .line_m,.listBox2 .list .line_m,.listBox3 .list .line_m{
+  flex: 1
+}
+
+
+.right_bottom_fixed{
+  position: fixed;
+  right: 5vw;
+  bottom: 14vw;
+}
+  
+#intoMsg{
+   text-align: center;
+   padding-top: 35vw;
+   color: gray;
+   font-weight: 600;
+}
+
+
+.mask{
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  background-color: rgba(0,0,0,0.7);
+  z-index: 10;
+}
+.maskBox{
+  border: 2px solid rgb(255,45,62);
+  position: absolute;
+  width: 80vw;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  background-color: white;
+  /* border: 2px solid #1fad4e; */
+  border-radius: 5px;
+  padding: 4.2vw 4vw 4vw 4vw;
+  max-height: 70vh;
+  overflow: auto;
+}
+
+.maskBox_close{
+  position: absolute;
+  width: 80vw;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+} 
+.maskBox_close .maskBox{
+  border: 2px solid rgb(255,45,62);
+  position: static;
+width: auto;
+top: initial;
+left: initial;
+transform: none;
+
+
+  background-color: white;
+  /* border: 2px solid #1fad4e; */
+  border-radius: 5px;
+  padding: 4.2vw 4vw 4vw 4vw;
+}
+.listTips{
+  background-color: rgb(240,240,240);
+  padding: 2vw 5vw 2vw 5vw;
+}
+.btn_close{
+  width: 10vw;
+  height: 10vw;
+  background-color: rgb(255,45,62);
+  border-radius: 50%;
+}
+.inpView{
+  display: flex;
+  align-items: center;
+  border: 2px solid rgb(255,45,62);
+  padding: 2vw;
+  border-radius: 1.2vw;
+  margin-bottom: 2vw;
+  margin-top: 1vw;
+}
+.disabled{
+  border-color: rgb(240,240,240);
+  color: grey;
+}
+.inpView input{
+  flex: 1;
+}
+.tishi{
+  font-size: 14px;
+  color: grey;
+}
+.tijiaoBtn{
+  text-align: center;
+  color: white;
+  background-color:  rgb(255,45,62);
+  padding: 2.4vw 0;
+  border-radius: 10vw;
+  margin-top: 3vw;
+}
+.icon8{
+  width: 8vw;
+  height: 8vw;
+  margin-right: 2vw;
+}
+.icon6{
+  width: 6vw;
+  height: 6vw;
+  margin-right: 2vw;
+}
+.icon_go{
+  width: 2vw;
+  height: 4vw;
+  margin-left: 1vw;
+}
+.img8vw{
+  width: 8vw;
+  height: 8vw;
+}
+.img10vw{
+  width: 10vw;
+  height: 10vw;
+}
+.img13vw{
+  width: 13vw;
+  height: 13vw;
+}
+.img16vw{
+  width: 16vw;
+  height: 16vw;
+}
+.img18vw{
+  width: 18vw;
+  height: 18vw;
+}
+.grey{
+  color: white;
+  filter: grayscale(1);  
+}
+.flex{
+  display: flex;
+}
+.aic{
+  align-items: center;
+}
+.flex1{
+  flex: 1;
+}
+
+.noData{
+  padding-top: 35vw;
+  text-align: center;
+  color: gray;
+  font-size: 14px;
+}
+.noMoreData{
+  padding: 3vw 0;
+  text-align: center;
+  color: gray;
+  font-size: 14px;
+}
+.getMore{
+  padding: 3vw 0;
+  text-align: center;
+  color: rgb(255,89,78);
+  font-size: 14px;
+}

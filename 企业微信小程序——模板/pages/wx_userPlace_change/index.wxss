@@ -1,0 +1,24 @@
+/* pages/wx_userPrize_change/index.wxss */
+view{
+  font-size: 14px;
+}
+
+.bottom_fixed{
+  position: fixed;
+  width: 100vw;
+  bottom: 0;
+}
+#saveBtn{
+  background-color: rgb(255,89,78);
+  color: white;
+  width: 60vw;
+  border-radius: 12vw;
+  line-height: 12vw;
+  text-align: center;
+  margin: 4vw auto;
+}
+#dingwei{
+  font-size: 14px;
+  font-weight: 600;
+  color: rgb(255,89,78);
+}

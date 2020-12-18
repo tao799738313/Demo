@@ -1,0 +1,18 @@
+/* components/tips/tips.wxss */
+.tips{
+  position: fixed;
+  bottom: 10vw;
+  left: 50%;
+   /* 核心 */
+  width: fit-content;
+  max-width: 70%;
+  padding: 2.4vw 3vw;
+  color: #fff;
+  font-size: 14px;
+  text-align: center;
+  word-wrap: break-word;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 1vw;
+  transform: translate(-50%,0);
+  z-index: 15;
+}

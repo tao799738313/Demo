@@ -1,0 +1,79 @@
+<!--components/prize/prize.wxml-->
+<view class="mask" hidden="{{!isShow}}">
+    <view class="maskBox_close">
+      <view class="btnLineRight">
+           <view class="close_top" bindtap="hide">
+              <image class="btn_close" src="/images/often_use/close_white.png" ></image>
+           </view>
+        </view>
+       <view class="maskBox">
+       <view class="actName">
+           {{actName}}
+        </view>
+          <view class="title">
+                {{title}}
+            </view>
+            <view wx:if="{{img}}" style="text-align:center;">
+              <image src="{{img}}" style="width:30vw;padding:2vw 0;" mode="widthFix"></image>
+            </view>
+            <view class="name">
+              {{name}}
+            </view>
+            <view class="tishi" style="padding-top:4vw;" wx:if="{{type == 1 || type == 2}}">
+                填写不规范将不发放奖品
+            </view>
+            <view wx:if="{{type == 1}}">
+               <view class="inpView">
+               <input placeholder="请输入姓名" data-inp="userName"  value='{{userName}}' bindinput="input"></input>
+               <view class="inp_btn" bindtap="choosePlace">
+                  选择
+               </view>
+               </view>
+               <view class="inpView">
+               <input type="number" placeholder="请输入联系电话" data-inp="userPhone"  value='{{userPhone}}' bindinput="input"></input>
+               </view>
+               <view class="inpView">
+                  <picker mode="region" bindchange="bindRegionChange" value="{{userRegion}}" style="width:100%;">
+                    <input placeholder="点击选择省市区" value='{{userRegion.length != 0 ? userRegion[0]+","+userRegion[1]+","+userRegion[2] : ""}}' disabled></input>
+                  </picker>
+               </view>
+               <view class="inpView">
+               <input placeholder="请输入收货地址" data-inp="userAddress"  value='{{userAddress}}' bindinput="input"></input>
+               </view>
+            </view>
+            <view wx:if="{{type == 2}}">
+               <view class="inpView">
+               <input placeholder="请输入姓名" data-inp="userName"  value='{{userName}}' bindinput="input"></input>
+               <view class="inp_btn" bindtap="choosePlace">
+                  选择
+               </view>
+               </view>
+               <view class="inpView">
+               <input type="number" placeholder="请输入联系电话" data-inp="userPhone"  value='{{userPhone}}' bindinput="input"></input>
+               </view>
+            </view>
+            <view wx:if="{{type == 4}}">
+               <view class="tishi" wx:if="{{tishi}}" style="padding-top:4vw;">
+                  {{tishi}}
+               </view>
+               <view class="inpView">
+                  <input value='{{code}}' disabled></input>
+                  <view class="inp_btn" bindtap="copy_code">
+                     复制
+                  </view>
+               </view>
+            </view>
+           <view wx:if="{{type == 1 || type == 2}}">
+                <view class="tijiaoBtn" bindtap="tijiao">
+                   提交
+                </view>
+            </view>
+            <view class="tips">
+               {{tips}}
+            </view>
+       </view>
+    </view>
+</view>
+
+<tips id="tips" />
+<place_radio id="place_radio" bind:returnPlace="returnPlace" />

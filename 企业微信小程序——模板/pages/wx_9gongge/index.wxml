@@ -1,0 +1,77 @@
+<!--index.wxml-->
+<view style="position:relative;background-color:rgb(254,46,62);min-height:100vh;">
+  <view>
+    <image id="bgTop" src='/images/9gongge/bg.jpg' mode="widthFix"></image>
+  </view>
+  <view wx:if="{{debug || come!='wx_joinHistory'}}">
+    <image bindtap="toUserPage" class="fixedBtn" mode="widthFix" src="/images/9gongge/wode.png"></image>
+  </view>
+  <view id="actTime">
+        <view class="h30">
+            {{actTime}}
+        </view>
+    </view>
+  <view id='frame_view'>
+    <view class='frame_row'>
+      <view class='frame_item' style='background-color:{{color[0]}}' >
+        <image src='{{imgAppSrc}}{{images[0].smallPicture}}'></image>
+      </view>
+      <view class='frame_item' style='background-color:{{color[1]}}' >
+        <image src='{{imgAppSrc}}{{images[1].smallPicture}}'></image>
+      </view>
+      <view class='frame_item' style='background-color:{{color[2]}}' >
+        <image src='{{imgAppSrc}}{{images[2].smallPicture}}'></image>
+      </view>
+    </view>
+    <view class='frame_row'>
+     <view class='frame_item' style='background-color:{{color[7]}}' >
+        <image src='{{imgAppSrc}}{{images[7].smallPicture}}'></image>
+      </view>
+      <view class='frame_item' bindtap='clickLuck'></view>
+       <view class='frame_item' style='background-color:{{color[3]}}' >
+        <image src='{{imgAppSrc}}{{images[3].smallPicture}}'></image>
+      </view>
+    </view>
+
+    <view class='frame_row'>
+     <view class='frame_item' style='background-color:{{color[6]}}' >
+        <image src='{{imgAppSrc}}{{images[6].smallPicture}}'></image>
+      </view>
+       <view class='frame_item' style='background-color:{{color[5]}}' >
+        <image src='{{imgAppSrc}}{{images[5].smallPicture}}'></image>
+      </view>
+       <view class='frame_item' style='background-color:{{color[4]}}' >
+        <image src='{{imgAppSrc}}{{images[4].smallPicture}}'></image>
+      </view>
+    </view>
+  </view>
+
+  <view id="bgBetween">
+    <view id="haiyou" wx:if="{{isShow_haiyou}}">
+        <view class="h30">
+            {{haiyou}}
+        </view>
+    </view>
+    <view id="lotterys" wx:if="{{isShow_lotterys}}">
+      <view animation="{{gundong}}">
+          <view class="h30" wx:for="{{lotterys}}" wx:item="item">
+              {{item.userName}} 抽中 {{item.itemName}}
+          </view>
+          <view class="h30" wx:for="{{lotterys}}" wx:item="item">
+              {{item.userName}} 抽中 {{item.itemName}}
+          </view>
+      </view>
+    </view>
+    <view id="guize">
+      <!-- <view class="guize_title">
+        活动规则
+      </view> -->
+      <rich-text nodes="{{lottery.explain}}"></rich-text>
+      <!-- <view class="guize_line">
+        1. 活动解释权归官方所有
+      </view> -->
+    </view>
+  </view>
+</view>
+<tips id="tips" />
+<prize id="prize" />

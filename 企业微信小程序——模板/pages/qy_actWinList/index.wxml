@@ -1,0 +1,57 @@
+<!--pages/qy_actWinList/index.wxml-->
+<view class="greyBody">
+   <view class="listBox3">
+      <view class="list" wx:for="{{list}}" wx:for-item="item">
+          <view class="line">
+              <image src="/images/often_use/prize.png" class="icon6"></image>
+              <view class="line_m">
+                 {{item.itemName}}
+              </view>
+          </view>
+          <view class="line">
+              <image src="/images/often_use/user.png" class="icon6"></image>
+              <view class="line_m">
+                 {{item.userName}}
+              </view>
+          </view>
+          <view class="line">
+              <image src="/images/often_use/phone.png" class="icon6"></image>
+              <view class="line_m">
+                 {{item.phone}}
+              </view>
+          </view>
+          <view class="line" wx:if="{{item.address}}">
+              <image src="/images/often_use/address.png" class="icon6"></image>
+              <view class="line_m">
+                 {{item.address}}
+              </view>
+          </view>
+          <!-- <view class="line btnLineRight">
+              <view class="btn blue2">送出</view>
+              <view class="btn grey2">已送出</view>
+          </view> -->
+      </view>
+   </view>
+
+   <view wx:if="{{status && status == 'noData'}}">
+        <view class="noData">
+            暂无数据
+        </view>
+    </view>
+    <view wx:if="{{status && status == 'noMoreData'}}">
+        <view class="noMoreData">
+            无更多数据
+        </view>
+    </view>
+    <view wx:if="{{status && status == 'getMore'}}">
+        <view class="getMore">
+            加载更多数据
+        </view>
+    </view>
+</view>
+
+
+
+
+<tips id="tips" />
+<prize id="prize" />

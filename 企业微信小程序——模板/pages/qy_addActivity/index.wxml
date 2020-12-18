@@ -1,0 +1,29 @@
+<!--pages/qy_addActivity/index.wxml-->
+<view class="greyBody">
+  <view style="padding: 1px 0;">
+    <view class="list" bindtap="toPage" data-page="1">
+      <image class="img16vw" style="margin-right:3vw;" src="/images/index/jiugongge.png"></image>
+      <view>
+          点击创建九宫格活动
+      </view>
+    </view>
+
+    <!-- <view class="list" bindtap="toPage" data-page="2">
+      <image class="img16vw" style="margin-right:3vw;" src="/images/index/dazhuanpan.png"></image>
+      <view>
+          点击创建大转盘活动
+      </view>
+    </view>
+
+
+    <view class="list" bindtap="toPage" data-page="3">
+      <image class="img16vw" style="margin-right:3vw;" src="/images/index/niudanji.png"></image>
+      <view>
+          点击创建扭蛋机活动
+      </view>
+    </view> -->
+  </view>  
+</view>
+
+<tips id="tips" />
+<prize id="prize" />

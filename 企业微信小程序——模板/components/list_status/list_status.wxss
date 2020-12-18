@@ -1,0 +1,21 @@
+/* components/list_status/list_status.wxss */
+
+
+.noData{
+  padding-top: 35vw;
+  text-align: center;
+  color: gray;
+  font-size: 14px;
+}
+.noMoreData{
+  padding: 3vw 0;
+  text-align: center;
+  color: gray;
+  font-size: 14px;
+}
+.getMore{
+  padding: 3vw 0;
+  text-align: center;
+  color: rgb(255,89,78);
+  font-size: 14px;
+}

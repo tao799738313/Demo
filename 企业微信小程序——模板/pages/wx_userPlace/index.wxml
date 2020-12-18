@@ -1,0 +1,65 @@
+<!--pages/userPlace/index.wxml-->
+<view style="padding-bottom:20vw;">
+<view class="listBox2" style="color: grey">
+   <view wx:for="{{list}}" wx:item="item" wx:key="id">
+       <view class="list">
+           <view class="line">
+              <image src="/images/often_use/user.png" class="icon6"></image>
+               <view class="line_m">
+                  {{item.name}}
+                  </view>
+           </view>
+           <view class="line">
+           <image src="/images/often_use/phone.png" class="icon6"></image>
+            <view class="line_m">
+                  {{item.phone}}
+                  </view>
+           </view>
+           <view class="line" wx:if="{{item.region.length != 0}}">
+           <image src="/images/often_use/region.png" class="icon6"></image>
+            <view class="line_m">
+              {{item.region[0]}},{{item.region[1]}},{{item.region[2]}}
+              </view>
+           </view>
+           <view class="line" wx:if="{{item.address}}">
+           <image src="/images/often_use/address.png" class="icon6"></image>
+            <view class="line_m">
+              {{item.address}}
+              </view>
+           </view>
+           <view class="line btnLineRight" style="padding: 2vw 0;">
+               <view class="btn red2" bindtap="delById" data-id="{{item.id}}">删除</view>
+              <view class="btn blue2" bindtap="updataById" data-id="{{item.id}}">修改</view>
+           </view>
+       </view>
+   </view>
+</view>
+
+<list_status id="list_status" />
+<!-- <view wx:if="{{status && status == 'noData'}}">
+   <view class="noData">
+      您当前没有创建任何地址哦~
+   </view>
+</view>
+<view wx:if="{{status && status == 'noMoreData'}}">
+   <view class="noMoreData">
+         无更多数据
+   </view>
+</view>
+<view wx:if="{{status && status == 'getMore'}}">
+   <view class="getMore">
+         加载更多数据
+   </view>
+</view> -->
+</view>
+
+<view class="bottom_fixed">
+    <view id="toChangeBtn" bindtap="toChange">
+        添加地址
+    </view>
+</view>
+
+
+<tips id="tips" />
+<confirm id="confirm" />
+<prize id="prize" />

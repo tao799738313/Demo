@@ -1,0 +1,13 @@
+/* pages/qy_myActivity/index.wxss */
+
+view{
+  font-size: 14px;
+}
+.title{
+  font-size: 16px;
+  font-weight: 600;
+}
+.time{
+  color: gray;
+  padding-top: 2vw;
+}

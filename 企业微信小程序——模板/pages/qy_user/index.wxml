@@ -1,0 +1,70 @@
+<!--pages/user/index.wxml-->
+<view id="intoMsg" wx:if="{{intoMsg}}"> 
+   - {{intoMsg}} -
+</view>
+<view wx:else>
+   <view id="userInfo">
+       <image id="userInfo_img" src="{{userInfo.avatarUrl}}" mode='widthFix'></image>
+       <view style="flex:1;">
+          <view id="nickName">{{userInfo.nickName}}</view>
+          <view wx:if="{{userInfo.phone}}">
+            <view id="userPhone">
+              {{userInfo.phone}}
+            </view>
+          </view>
+       </view>
+   </view>
+   <view class="listBox2" style="padding-top:2vw;">
+        <view class="list">
+            <view class="line" bindtap="toPage" data-page="4">
+            <image src="/images/often_use/count.png" class="icon6"></image>
+              <view class="line_m">
+                 分享统计
+              </view>
+              <image src="/images/often_use/go.png" class="icon_go"></image>
+            </view>
+        
+            <view class="line" bindtap="toPage" data-page="5">
+            <image src="/images/often_use/act.png" class="icon6"></image>
+              <view class="line_m">
+                我创建的活动
+              </view>
+              <image src="/images/often_use/go.png" class="icon_go"></image>
+            </view>
+        
+            <view class="line" bindtap="toPage" data-page="6">
+            <image src="/images/often_use/addAct.png" class="icon6"></image>
+              <view class="line_m">
+                创建活动
+              </view>
+              <image src="/images/often_use/go.png" class="icon_go"></image>
+            </view>
+        </view>
+
+        <view class="list">
+            <view class="line" bindtap="toPage" data-page="1">
+            <image src="/images/often_use/prize.png" class="icon6"></image>
+              <view class="line_m">
+                 我的奖品
+              </view>
+              <image src="/images/often_use/go.png" class="icon_go"></image>
+            </view>
+          
+            <view class="line" bindtap="toPage" data-page="2">
+            <image src="/images/often_use/address.png" class="icon6"></image>
+              <view class="line_m">
+                 我的地址
+              </view>
+              <image src="/images/often_use/go.png" class="icon_go"></image>
+            </view>
+         
+            <view class="line" bindtap="toPage" data-page="3">
+            <image src="/images/often_use/act.png" class="icon6"></image>
+              <view class="line_m">
+                参与过的活动
+              </view>
+              <image src="/images/often_use/go.png" class="icon_go"></image>
+            </view>
+          </view>
+   </view>
+</view>
